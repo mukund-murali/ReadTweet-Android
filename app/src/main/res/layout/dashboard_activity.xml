@@ -4,16 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_tweets"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/ll_relevant_tweets"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"></LinearLayout>
-
-    </ScrollView>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

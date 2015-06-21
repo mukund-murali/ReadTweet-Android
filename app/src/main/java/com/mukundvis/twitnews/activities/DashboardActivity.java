@@ -1,25 +1,19 @@
 package com.mukundvis.twitnews.activities;
 
 import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.mukundvis.twitnews.R;
+import com.mukundvis.twitnews.adapters.TweetRecyclerAdapter;
 import com.mukundvis.twitnews.constants.ApiConstants;
-import com.mukundvis.twitnews.models.LoginResponse;
 import com.mukundvis.twitnews.models.TweetResponse;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.tweetui.CompactTweetView;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.http.Field;
 import retrofit.http.GET;
-import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**
@@ -27,7 +21,9 @@ import retrofit.http.Query;
  */
 public class DashboardActivity extends BaseLoggedInActivity {
 
-    private LinearLayout llRelevantTweets;
+    RecyclerView mRecyclerView;
+
+    TweetRecyclerAdapter mAdapter;
 
     // Obtain the tweets and show here.
     public interface GetTweetsService {
@@ -47,7 +43,7 @@ public class DashboardActivity extends BaseLoggedInActivity {
 
     @Override
     protected void getViewReferences() {
-        llRelevantTweets = (LinearLayout) findViewById(R.id.ll_relevant_tweets);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_tweets);
     }
 
     @Override
@@ -61,23 +57,22 @@ public class DashboardActivity extends BaseLoggedInActivity {
         final RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(ApiConstants.END_POINT)
                 .build();
+        // use a linear layout manager
+        RecyclerView.LayoutManager mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
         GetTweetsService service = restAdapter.create(GetTweetsService.class);
         service.getTweets(getPrefs().getDeviceId(), getPrefs().getUserId(), "", new Callback<TweetResponse>() {
             @Override
             public void success(TweetResponse obj, Response response) {
-                int i = 10;
-                for (Tweet tweet : obj.relevantTweets) {
-                    llRelevantTweets.addView(
-                            new CompactTweetView(
-                                    DashboardActivity.this,
-                                    tweet));
-                }
+                mAdapter = new TweetRecyclerAdapter(obj.tweets);
+                mRecyclerView.setAdapter(mAdapter);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 int i = 10;
+                Toast.makeText(DashboardActivity.this, "Error fetching tweets", Toast.LENGTH_LONG).show();
             }
         });
     }
