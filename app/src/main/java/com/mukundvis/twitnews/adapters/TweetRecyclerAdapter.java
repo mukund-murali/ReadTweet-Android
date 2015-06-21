@@ -20,11 +20,13 @@ public class TweetRecyclerAdapter extends RecyclerView.Adapter<TweetRecyclerAdap
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tvScreenName;
+        public TextView tvScreenName, tvTweet, tvUsername;
 
         public ViewHolder(View v) {
             super(v);
             tvScreenName = (TextView) v.findViewById(R.id.tv_screen_name);
+            tvUsername = (TextView) v.findViewById(R.id.tv_username);
+            tvTweet = (TextView) v.findViewById(R.id.tv_tweet);
         }
     }
 
@@ -43,7 +45,10 @@ public class TweetRecyclerAdapter extends RecyclerView.Adapter<TweetRecyclerAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.tvScreenName.setText(tweets.get(position).user.name);
+        MyTweet tweet = tweets.get(position);
+        holder.tvScreenName.setText(tweet.user.name);
+        holder.tvUsername.setText("@" + tweet.user.name);
+        holder.tvTweet.setText(tweet.text);
     }
 
     @Override
