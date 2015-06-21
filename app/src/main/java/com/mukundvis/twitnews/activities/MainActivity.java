@@ -1,15 +1,12 @@
 package com.mukundvis.twitnews.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.mukundvis.twitnews.MyApplication;
 import com.mukundvis.twitnews.R;
+import com.mukundvis.twitnews.constants.ApiConstants;
 import com.mukundvis.twitnews.models.LoginResponse;
-import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-import io.fabric.sdk.android.Fabric;
+
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -27,9 +24,9 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 public class MainActivity extends BaseActivity {
 
-    public interface GitHubService {
+    public interface LoginService {
         @FormUrlEncoded
-        @POST("/login")
+        @POST(ApiConstants.URL_LOGIN)
         void login(
                 @Field("user_id") long userId,
                 @Field("username") String username,
@@ -38,10 +35,6 @@ public class MainActivity extends BaseActivity {
                  retrofit.Callback<LoginResponse> callback
         );
     }
-
-    public static final String HOST = "http://192.168.1.18:3000/";
-    public static final String END_POINT = HOST + "api/v1";
-
 
     private TwitterLoginButton loginButton;
 
@@ -78,10 +71,10 @@ public class MainActivity extends BaseActivity {
                 String username = result.data.getUserName();
 
                 final RestAdapter restAdapter = new RestAdapter.Builder()
-                        .setEndpoint(END_POINT)
+                        .setEndpoint(ApiConstants.END_POINT)
                         .build();
 
-                GitHubService service = restAdapter.create(GitHubService.class);
+                LoginService service = restAdapter.create(LoginService.class);
                 service.login(userId, username, authToken, authTokenSecret, new retrofit.Callback<LoginResponse>() {
                     @Override
                     public void success(LoginResponse loginResponse, Response response) {

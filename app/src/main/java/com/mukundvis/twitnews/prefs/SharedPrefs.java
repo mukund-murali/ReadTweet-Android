@@ -24,9 +24,17 @@ public class SharedPrefs {
         return this;
     }
 
+    public String getDeviceId() {
+        return prefs.getString(KEY_DEVICE_ID, null);
+    }
+
+    public long getUserId() {
+        return prefs.getLong(KEY_USER_ID, -1);
+    }
+
     public boolean isLoggedIn() {
-        long userId = prefs.getLong(KEY_USER_ID, -1);
-        String deviceId = prefs.getString(KEY_DEVICE_ID, null);
+        long userId = getUserId();
+        String deviceId = getDeviceId();
         return userId != -1 && deviceId != null;
     }
 
