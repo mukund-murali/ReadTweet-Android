@@ -18,6 +18,13 @@ public class TweetRecyclerAdapter extends RecyclerView.Adapter<TweetRecyclerAdap
 
     private List<MyTweet> tweets;
 
+    public void setTweets(List<MyTweet> tweets) {
+        this.tweets = tweets;
+    }
+
+    public List<MyTweet> getTweets() {
+        return tweets;
+    }
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView tvScreenName, tvTweet, tvUsername;
@@ -59,6 +66,7 @@ public class TweetRecyclerAdapter extends RecyclerView.Adapter<TweetRecyclerAdap
     @Override
     public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
+        int i = 10;
     }
 
     public void remove(int position) {
