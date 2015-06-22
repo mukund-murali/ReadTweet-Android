@@ -60,4 +60,8 @@ public class TweetRecyclerAdapter extends RecyclerView.Adapter<TweetRecyclerAdap
     public void onViewRecycled(ViewHolder holder) {
         super.onViewRecycled(holder);
     }
+
+    public void remove(int position) {
+        tweets.remove(position);
+    }
 }

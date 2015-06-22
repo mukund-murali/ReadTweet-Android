@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import com.malinskiy.superrecyclerview.SuperRecyclerView;
+import com.malinskiy.superrecyclerview.swipe.SparseItemRemoveAnimator;
+import com.malinskiy.superrecyclerview.swipe.SwipeDismissRecyclerViewTouchListener;
 import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.adapters.TweetRecyclerAdapter;
 import com.mukundvis.twitnews.constants.ApiConstants;
@@ -19,11 +22,26 @@ import retrofit.http.Query;
 /**
  * Created by mukundvis on 21/06/15.
  */
-public class DashboardActivity extends BaseLoggedInActivity {
+public class DashboardActivity extends BaseLoggedInActivity implements SwipeDismissRecyclerViewTouchListener.DismissCallbacks {
 
-    RecyclerView mRecyclerView;
+    SuperRecyclerView mRecyclerView;
+    private SparseItemRemoveAnimator mSparseAnimator;
 
     TweetRecyclerAdapter mAdapter;
+
+    @Override
+    public boolean canDismiss(int i) {
+        return true;
+    }
+
+    @Override
+    public void onDismiss(RecyclerView recyclerView, int[] reverseSortedPositions) {
+        for (int position : reverseSortedPositions) {
+            mSparseAnimator.setSkipNext(true);
+            mAdapter.remove(position);
+            mAdapter.notifyItemRemoved(position);
+        }
+    }
 
     // Obtain the tweets and show here.
     public interface GetTweetsService {
@@ -43,7 +61,7 @@ public class DashboardActivity extends BaseLoggedInActivity {
 
     @Override
     protected void getViewReferences() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_tweets);
+        mRecyclerView = (SuperRecyclerView) findViewById(R.id.rv_tweets);
     }
 
     @Override
@@ -60,6 +78,10 @@ public class DashboardActivity extends BaseLoggedInActivity {
         // use a linear layout manager
         RecyclerView.LayoutManager mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mRecyclerView.setupSwipeToDismiss(this);
+        mSparseAnimator = new SparseItemRemoveAnimator();
+        mRecyclerView.getRecyclerView().setItemAnimator(mSparseAnimator);
 
         GetTweetsService service = restAdapter.create(GetTweetsService.class);
         service.getTweets(getPrefs().getDeviceId(), getPrefs().getUserId(), "", new Callback<TweetResponse>() {
