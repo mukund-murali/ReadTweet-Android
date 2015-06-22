@@ -5,6 +5,7 @@ import android.app.Application;
 import com.mukundvis.twitnews.prefs.SharedPrefs;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import io.fabric.sdk.android.Fabric;
 

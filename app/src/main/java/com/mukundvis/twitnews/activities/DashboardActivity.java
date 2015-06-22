@@ -3,6 +3,9 @@ package com.mukundvis.twitnews.activities;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.malinskiy.superrecyclerview.OnMoreListener;
@@ -13,6 +16,7 @@ import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.adapters.TweetRecyclerAdapter;
 import com.mukundvis.twitnews.constants.ApiConstants;
 import com.mukundvis.twitnews.models.TweetResponse;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -85,7 +89,8 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     }
 
     private void initializeRecyclerView() {
-        // use a linear layout manager
+        // TODO: height of the row gets affected when a view is removed. Need to take care of this.
+        // TODO: Will setting height common for everything help?
         RecyclerView.LayoutManager mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -142,4 +147,26 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         );
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_dashboard, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_compose:
+                composeTweet();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void composeTweet() {
+        TweetComposer.Builder builder = new TweetComposer.Builder(this);
+        builder.show();
+    }
 }
