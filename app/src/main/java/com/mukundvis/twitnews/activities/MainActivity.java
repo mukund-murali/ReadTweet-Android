@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity {
                 String username = result.data.getUserName();
 
                 final RestAdapter restAdapter = new RestAdapter.Builder()
-                        .setEndpoint(ApiConstants.END_POINT)
+                        .setEndpoint(ApiConstants.END_POINT_V1)
                         .build();
 
                 LoginService service = restAdapter.create(LoginService.class);

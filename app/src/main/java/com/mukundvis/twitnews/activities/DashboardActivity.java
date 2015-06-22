@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.malinskiy.superrecyclerview.OnMoreListener;
@@ -30,11 +31,21 @@ import retrofit.http.Query;
  */
 public class DashboardActivity extends BaseLoggedInActivity implements SwipeDismissRecyclerViewTouchListener.DismissCallbacks, SwipeRefreshLayout.OnRefreshListener, OnMoreListener {
 
+    public interface LoggedInApiService {
+        @GET(ApiConstants.URL_GET_TWEETS)
+        void getTweets(
+                @Query("device_id") String deviceId,
+                @Query("user_id") long userId,
+                @Query("since_id") String sinceTweetId,
+                retrofit.Callback<TweetResponse> callback
+        );
+    }
+
     SuperRecyclerView mRecyclerView;
     SparseItemRemoveAnimator mSparseAnimator;
 
     RestAdapter restAdapter;
-    GetTweetsService service;
+    LoggedInApiService service;
 
     TweetRecyclerAdapter mAdapter;
 
@@ -56,9 +67,9 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         restAdapter = new RestAdapter.Builder()
-                .setEndpoint(ApiConstants.END_POINT)
+                .setEndpoint(ApiConstants.END_POINT_V2)
                 .build();
-        service = restAdapter.create(GetTweetsService.class);
+        service = restAdapter.create(LoggedInApiService.class);
         initializeRecyclerView();
         fetchNewTweets();
     }
@@ -81,8 +92,13 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
             @Override
             public void failure(RetrofitError error) {
-                int i = 10;
-                Toast.makeText(DashboardActivity.this, "Error fetching tweets", Toast.LENGTH_LONG).show();
+                switch (error.getResponse().getStatus()) {
+                    case 403:
+                        // unauthorized
+                        Toast.makeText(DashboardActivity.this, "Un authorized", Toast.LENGTH_SHORT).show();
+                        mRecyclerView.getProgressView().setVisibility(View.GONE);
+                        break;
+                }
                 mRecyclerView.getSwipeToRefresh().setRefreshing(false);
             }
         });
@@ -134,17 +150,6 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     @Override
     public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
         int i =10;
-    }
-
-    // Obtain the tweets and show here.
-    public interface GetTweetsService {
-        @GET(ApiConstants.URL_GET_TWEETS)
-        void getTweets(
-                @Query("device_id") String deviceId,
-                @Query("user_id") long userId,
-                @Query("since_id") String sinceTweetId,
-                retrofit.Callback<TweetResponse> callback
-        );
     }
 
     @Override
