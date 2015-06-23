@@ -92,6 +92,10 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
             @Override
             public void failure(RetrofitError error) {
+                mRecyclerView.getSwipeToRefresh().setRefreshing(false);
+                if (error.getResponse() == null) {
+                    return;
+                }
                 switch (error.getResponse().getStatus()) {
                     case 403:
                         // unauthorized
@@ -99,7 +103,6 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                         mRecyclerView.getProgressView().setVisibility(View.GONE);
                         break;
                 }
-                mRecyclerView.getSwipeToRefresh().setRefreshing(false);
             }
         });
     }
