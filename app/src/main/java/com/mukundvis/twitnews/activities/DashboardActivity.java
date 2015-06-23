@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.malinskiy.superrecyclerview.OnMoreListener;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.malinskiy.superrecyclerview.swipe.SparseItemRemoveAnimator;
@@ -16,8 +17,13 @@ import com.malinskiy.superrecyclerview.swipe.SwipeDismissRecyclerViewTouchListen
 import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.adapters.TweetRecyclerAdapter;
 import com.mukundvis.twitnews.constants.ApiConstants;
+import com.mukundvis.twitnews.database.DBHelper;
+import com.mukundvis.twitnews.models.MyTweet;
 import com.mukundvis.twitnews.models.TweetResponse;
+import com.mukundvis.twitnews.utils.DBUtils;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -47,6 +53,8 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     RestAdapter restAdapter;
     LoggedInApiService service;
 
+    DBHelper helper;
+
     TweetRecyclerAdapter mAdapter;
 
     @Override
@@ -70,7 +78,10 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                 .setEndpoint(ApiConstants.END_POINT_V2)
                 .build();
         service = restAdapter.create(LoggedInApiService.class);
+
+        helper = new DBHelper(this);
         initializeRecyclerView();
+        refreshDisplay();
         fetchNewTweets();
     }
 
@@ -80,13 +91,15 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         service.getTweets(getPrefs().getDeviceId(), getPrefs().getUserId(), sinceTweetId, new Callback<TweetResponse>() {
             @Override
             public void success(TweetResponse obj, Response response) {
-                if (mAdapter == null) {
-                    mAdapter = new TweetRecyclerAdapter(obj.tweets);
-                    mRecyclerView.setAdapter(mAdapter);
-                } else {
-                    mAdapter.setTweets(obj.tweets);
-                    mAdapter.notifyDataSetChanged();
+                // add the tweets to database
+                Gson gson = new Gson();
+                for (MyTweet tweet: obj.tweets) {
+                    String tweetJson = gson.toJson(tweet);
+                    long tweetId = tweet.id;
+                    long insertResp = helper.createTweet(tweetId, tweetJson);
+                    int i = 10;
                 }
+                refreshDisplay();
                 mRecyclerView.getSwipeToRefresh().setRefreshing(false);
             }
 
@@ -107,11 +120,20 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         });
     }
 
+    private void refreshDisplay() {
+        List<MyTweet> tweets = DBUtils.getTweetsFromCursor(helper.getTweets());
+        mAdapter.setTweets(tweets);
+        mAdapter.notifyDataSetChanged();
+    }
+
     private void initializeRecyclerView() {
         // TODO: height of the row gets affected when a view is removed. Need to take care of this.
         // TODO: Will setting height common for everything help?
         RecyclerView.LayoutManager mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAdapter = new TweetRecyclerAdapter();
+        mRecyclerView.setAdapter(mAdapter);
 
         // swipe to dismiss
         mRecyclerView.setupSwipeToDismiss(this);
@@ -136,13 +158,13 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         for (int position : reverseSortedPositions) {
             mSparseAnimator.setSkipNext(true);
             markTweetIgnored(position);
-            mAdapter.remove(position);
-            mAdapter.notifyDataSetChanged();
         }
+        refreshDisplay();
     }
 
     private void markTweetIgnored(int position) {
-        // TODO
+        MyTweet tweet = ((TweetRecyclerAdapter) mRecyclerView.getAdapter()).getTweets().get(position);
+        helper.markIgnored(tweet.id);
     }
 
     @Override

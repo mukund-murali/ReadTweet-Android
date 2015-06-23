@@ -18,6 +18,10 @@ public class TweetRecyclerAdapter extends RecyclerView.Adapter<TweetRecyclerAdap
 
     private List<MyTweet> tweets;
 
+    public TweetRecyclerAdapter() {
+        tweets = null;
+    }
+
     public void setTweets(List<MyTweet> tweets) {
         this.tweets = tweets;
     }
@@ -53,13 +57,15 @@ public class TweetRecyclerAdapter extends RecyclerView.Adapter<TweetRecyclerAdap
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         MyTweet tweet = tweets.get(position);
-        holder.tvScreenName.setText(tweet.user.name);
+        holder.tvScreenName.setText(tweet.createdAt);
         holder.tvUsername.setText("@" + tweet.user.name);
         holder.tvTweet.setText(tweet.text);
     }
 
     @Override
     public int getItemCount() {
+        if (tweets == null)
+            return 0;
         return tweets.size();
     }
 
