@@ -1,6 +1,10 @@
 package com.mukundvis.twitnews.activities;
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -15,11 +19,13 @@ import com.malinskiy.superrecyclerview.SuperRecyclerView;
 import com.malinskiy.superrecyclerview.swipe.SparseItemRemoveAnimator;
 import com.malinskiy.superrecyclerview.swipe.SwipeDismissRecyclerViewTouchListener;
 import com.mukundvis.twitnews.R;
+import com.mukundvis.twitnews.adapters.TweetCursorAdapter;
 import com.mukundvis.twitnews.adapters.TweetRecyclerAdapter;
 import com.mukundvis.twitnews.constants.ApiConstants;
 import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
 import com.mukundvis.twitnews.models.TweetResponse;
+import com.mukundvis.twitnews.providers.TweetProvider;
 import com.mukundvis.twitnews.utils.DBUtils;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
@@ -35,7 +41,34 @@ import retrofit.http.Query;
 /**
  * Created by mukundvis on 21/06/15.
  */
-public class DashboardActivity extends BaseLoggedInActivity implements SwipeDismissRecyclerViewTouchListener.DismissCallbacks, SwipeRefreshLayout.OnRefreshListener, OnMoreListener {
+public class DashboardActivity extends BaseLoggedInActivity implements SwipeDismissRecyclerViewTouchListener.DismissCallbacks,
+        SwipeRefreshLayout.OnRefreshListener, OnMoreListener, LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int TWEETS_LOADER = 1012;
+
+    Cursor activeCursor = null;
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String selection = DBHelper.COLUMN_IGNORED + " = 0";
+        return new CursorLoader(this, TweetProvider.CONTENT_URI, null,
+                selection, null, DBHelper.COLUMN_TWEET_ID + " DESC");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        activeCursor = data;
+        mAdapter.changeCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+    /*
+     * Clears out the adapter's reference to the Cursor.
+     * This prevents memory leaks.
+     */
+        mAdapter.changeCursor(null);
+    }
 
     public interface LoggedInApiService {
         @GET(ApiConstants.URL_GET_TWEETS)
@@ -55,7 +88,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
     DBHelper helper;
 
-    TweetRecyclerAdapter mAdapter;
+    TweetCursorAdapter mAdapter;
 
     @Override
     protected int getDefaultLayout() {
@@ -81,8 +114,8 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
         helper = new DBHelper(this);
         initializeRecyclerView();
-        refreshDisplay();
         fetchNewTweets();
+        getSupportLoaderManager().initLoader(TWEETS_LOADER, null, this);
     }
 
     private void fetchNewTweets() {
@@ -93,13 +126,12 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
             public void success(TweetResponse obj, Response response) {
                 // add the tweets to database
                 Gson gson = new Gson();
-                for (MyTweet tweet: obj.tweets) {
+                for (MyTweet tweet : obj.tweets) {
                     String tweetJson = gson.toJson(tweet);
                     long tweetId = tweet.id;
                     long insertResp = helper.createTweet(tweetId, tweetJson);
                     int i = 10;
                 }
-                refreshDisplay();
                 mRecyclerView.getSwipeToRefresh().setRefreshing(false);
             }
 
@@ -120,19 +152,13 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         });
     }
 
-    private void refreshDisplay() {
-        List<MyTweet> tweets = DBUtils.getTweetsFromCursor(helper.getTweets());
-        mAdapter.setTweets(tweets);
-        mAdapter.notifyDataSetChanged();
-    }
-
     private void initializeRecyclerView() {
         // TODO: height of the row gets affected when a view is removed. Need to take care of this.
         // TODO: Will setting height common for everything help?
         RecyclerView.LayoutManager mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new TweetRecyclerAdapter();
+        mAdapter = new TweetCursorAdapter(this, null);
         mRecyclerView.setAdapter(mAdapter);
 
         // swipe to dismiss
@@ -159,12 +185,15 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
             mSparseAnimator.setSkipNext(true);
             markTweetIgnored(position);
         }
-        refreshDisplay();
     }
 
     private void markTweetIgnored(int position) {
-        MyTweet tweet = ((TweetRecyclerAdapter) mRecyclerView.getAdapter()).getTweets().get(position);
-        helper.markIgnored(tweet.id);
+        activeCursor.moveToPosition(position);
+        long tweetId = DBUtils.getTweetId(activeCursor);
+        MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
+        int markIgnored = helper.markIgnored(tweet.id);
+        getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
+        int i = 10;
     }
 
     @Override

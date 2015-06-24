@@ -4,6 +4,7 @@ import android.database.Cursor;
 
 import com.google.gson.Gson;
 import com.mukundvis.twitnews.database.DBHelper;
+import com.mukundvis.twitnews.utils.DBUtils;
 import com.twitter.sdk.android.core.models.Coordinates;
 import com.twitter.sdk.android.core.models.Place;
 import com.twitter.sdk.android.core.models.TweetEntities;
@@ -23,8 +24,11 @@ public class MyTweet extends com.twitter.sdk.android.core.models.Tweet {
         this.isRelevant = isRelevant;
     }
 
-    public static MyTweet fromCursor(Cursor cursor) {
-        String tweetJSON = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_TWEET_JSON));
-        return new Gson().fromJson(tweetJSON, MyTweet.class);
+    public static MyTweet fromCursor(Cursor cursor, Gson gson) {
+        String tweetJSON = DBUtils.getTweetJSON(cursor);
+        if (gson == null) {
+            gson = new Gson();
+        }
+        return gson.fromJson(tweetJSON, MyTweet.class);
     }
 }

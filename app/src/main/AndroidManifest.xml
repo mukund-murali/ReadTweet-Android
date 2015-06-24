@@ -24,6 +24,9 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="bb1a3a1ced3514021724bd265801b0a0d09567bc" />
+
+        <provider android:name=".providers.TweetProvider"
+            android:authorities="com.mukundvis.twitnews.provider.Tweet" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

@@ -26,4 +26,12 @@ public class DBUtils {
         long secDiff = (millisDuringCompletion - millisInStart) / 1000;
         return list;
     }
+
+    public static long getTweetId(Cursor cursor) {
+        return cursor.getLong(cursor.getColumnIndex(DBHelper.COLUMN_TWEET_ID));
+    }
+
+    public static String getTweetJSON(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_TWEET_JSON));
+    }
 }
