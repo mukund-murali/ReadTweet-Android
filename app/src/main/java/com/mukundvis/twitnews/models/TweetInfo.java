@@ -6,7 +6,7 @@ package com.mukundvis.twitnews.models;
 public class TweetInfo {
 
     public long tweetId;
-    int skipped, interested, ignored;
+    public int skipped, interested, ignored;
 
     public TweetInfo(long tweetId, int skipped, int interested, int ignored) {
         this.tweetId = tweetId;

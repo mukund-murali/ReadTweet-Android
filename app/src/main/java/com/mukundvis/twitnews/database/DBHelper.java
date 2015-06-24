@@ -12,7 +12,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import com.mukundvis.twitnews.MyApplication;
-import com.mukundvis.twitnews.models.SyncTweets;
 import com.mukundvis.twitnews.models.TweetInfo;
 import com.mukundvis.twitnews.utils.DBUtils;
 
@@ -29,6 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_SKIPPED = "skipped";
     public static final String COLUMN_IGNORED = "ignored";
     public static final String COLUMN_INTERESTED = "interested";
+    private static final String COLUMN_IS_SYNCED = "is_synced";
 
     private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
             COLUMN_ID + " PRIMARY KEY, " +
@@ -36,6 +36,7 @@ public class DBHelper extends SQLiteOpenHelper {
             COLUMN_TWEET_JSON + " TEXT, " +
             COLUMN_SKIPPED + " INTEGER DEFAULT 0, " +
             COLUMN_IGNORED + " INTEGER DEFAULT 0, " +
+            COLUMN_IS_SYNCED + " BOOLEAN DEFAULT 0," +
             COLUMN_INTERESTED + " INTEGER DEFAULT 0);";
 
     SQLiteDatabase db, readableDb;
@@ -80,6 +81,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String[] selectionArgs = new String[]{tweetId + ""};
         ContentValues values = new ContentValues();
         values.put(COLUMN_IGNORED, ignored + 1);
+        values.put(COLUMN_IS_SYNCED, Boolean.FALSE);
         return db.update(TABLE_NAME, values, selection, selectionArgs);
     }
 
@@ -89,6 +91,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String[] selectionArgs = new String[]{tweetId + ""};
         ContentValues values = new ContentValues();
         values.put(COLUMN_INTERESTED, interested + 1);
+        values.put(COLUMN_IS_SYNCED, Boolean.FALSE);
         return db.update(TABLE_NAME, values, selection, selectionArgs);
     }
 
@@ -98,11 +101,14 @@ public class DBHelper extends SQLiteOpenHelper {
         String[] selectionArgs = new String[]{tweetId + ""};
         ContentValues values = new ContentValues();
         values.put(COLUMN_SKIPPED, skipped + 1);
+        values.put(COLUMN_IS_SYNCED, Boolean.FALSE);
         return db.update(TABLE_NAME, values, selection, selectionArgs);
     }
 
     public List<TweetInfo> getTweetsToSync() {
-        String selection = COLUMN_SKIPPED + " > 0 OR " + COLUMN_IGNORED + " > 0 OR " + COLUMN_INTERESTED + " > 0";
+        String andCondition1 = "(" + COLUMN_SKIPPED + " > 0 OR " + COLUMN_IGNORED + " > 0 OR " + COLUMN_INTERESTED + " > 0)";
+        String andCondition2 = COLUMN_IS_SYNCED + " = 0";
+        String selection = andCondition1 + " AND " + andCondition2;
         Cursor cursor = readableDb.query(TABLE_NAME, null, selection, null, null, null, null);
         List<TweetInfo> tweets = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -114,6 +120,19 @@ public class DBHelper extends SQLiteOpenHelper {
         return tweets;
     }
 
+    public long getMaxTweetId() {
+        Cursor c = readableDb.query(TABLE_NAME, new String[]{"MAX(" + COLUMN_TWEET_ID + ")"}, null, null, null, null, null);
+        try {
+            if (DBUtils.isCursorUsable(c)) {
+                c.moveToFirst();
+                return c.getLong(0);
+            }
+        } finally {
+            DBUtils.closeCursor(c);
+        }
+        return Integer.MIN_VALUE;
+    }
+
     public int markTweetsUpdated(List<TweetInfo> tweets) {
         ArrayList<String> tweetIds = new ArrayList<>();
         for (TweetInfo tweetInfo: tweets) {
@@ -121,11 +140,15 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         String idsToUpdate = TextUtils.join(", ", tweetIds);
 
-
         ContentValues values = new ContentValues();
-        values.put(COLUMN_IGNORED, 0);
+        // Since ignored is used to list tweets, just mark the tweet as ignored to not show
+        // Could come useful to show all ignored tweets separately
+        // values.put(COLUMN_IGNORED, 0);
         values.put(COLUMN_SKIPPED, 0);
         values.put(COLUMN_INTERESTED, 0);
-        return db.update(TABLE_NAME, values, COLUMN_TWEET_ID + " in (" + idsToUpdate + ")", null);
+        values.put(COLUMN_IS_SYNCED, 1);
+        int updateResp = 1;
+        updateResp = db.update(TABLE_NAME, values, COLUMN_TWEET_ID + " in (" + idsToUpdate + ")", null);
+        return updateResp;
     }
 }

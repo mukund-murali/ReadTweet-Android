@@ -40,7 +40,7 @@ import retrofit.http.Query;
  * Created by mukundvis on 21/06/15.
  */
 public class DashboardActivity extends BaseLoggedInActivity implements SwipeDismissRecyclerViewTouchListener.DismissCallbacks,
-        SwipeRefreshLayout.OnRefreshListener, OnMoreListener, LoaderManager.LoaderCallbacks<Cursor> {
+        SwipeRefreshLayout.OnRefreshListener, OnMoreListener, LoaderManager.LoaderCallbacks<Cursor>,TweetCursorAdapter.OnButtonClickListener {
 
     private static final int TWEETS_LOADER = 1012;
 
@@ -68,12 +68,22 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         mAdapter.changeCursor(null);
     }
 
+    @Override
+    public void onInterested(int position) {
+        markTweetInterested(position);
+    }
+
+    @Override
+    public void onIgnored(int position) {
+        markTweetIgnored(position);
+    }
+
     public interface GetTweetsService {
         @GET(ApiConstants.URL_GET_TWEETS)
         void getTweets(
                 @Query("device_id") String deviceId,
                 @Query("user_id") long userId,
-                @Query("since_id") String sinceTweetId,
+                @Query("since_tweet_id") String sinceTweetId,
                 retrofit.Callback<TweetResponse> callback
         );
     }
@@ -118,16 +128,20 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
     private void fetchNewTweets() {
         mRecyclerView.getSwipeToRefresh().setRefreshing(true);
-        String sinceTweetId = "";
+        String sinceTweetId = helper.getMaxTweetId() + "";
         service.getTweets(getPrefs().getDeviceId(), getPrefs().getUserId(), sinceTweetId, new Callback<TweetResponse>() {
             @Override
             public void success(TweetResponse obj, Response response) {
                 // add the tweets to database
                 Gson gson = new Gson();
+                if (obj.tweets == null) {
+                    return;
+                }
                 for (MyTweet tweet : obj.tweets) {
                     String tweetJson = gson.toJson(tweet);
                     long tweetId = tweet.id;
                     long insertResp = helper.createTweet(tweetId, tweetJson);
+                    getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
                     int i = 10;
                 }
                 mRecyclerView.getSwipeToRefresh().setRefreshing(false);
@@ -156,13 +170,10 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         RecyclerView.LayoutManager mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new TweetCursorAdapter(this, null);
-        mRecyclerView.setAdapter(mAdapter);
-
         // swipe to dismiss
         mRecyclerView.setupSwipeToDismiss(this);
         mSparseAnimator = new SparseItemRemoveAnimator();
-        mRecyclerView.getRecyclerView().setItemAnimator(mSparseAnimator);
+        // mRecyclerView.getRecyclerView().setItemAnimator(mSparseAnimator);
 
         // onMore
         mRecyclerView.setRefreshListener(this);
@@ -170,6 +181,10 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                 android.R.color.holo_blue_light, android.R.color.holo_green_light,
                 android.R.color.holo_red_light);
         mRecyclerView.setupMoreListener(this, 1);
+
+        mAdapter = new TweetCursorAdapter(this, null);
+        mAdapter.setOnButtonClickListener(this);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -191,14 +206,13 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
         int markIgnored = helper.markIgnored(tweet.id, activeCursor);
         getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
-        SyncTweetsService.startSync();
     }
 
     private void markTweetInterested(int position) {
         activeCursor.moveToPosition(position);
         long tweetId = DBUtils.getTweetId(activeCursor);
         MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
-        int markIgnored = helper.markInterested(tweet.id, activeCursor);
+        int markInterested = helper.markInterested(tweet.id, activeCursor);
         getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
     }
 
@@ -241,5 +255,11 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     private void composeTweet() {
         TweetComposer.Builder builder = new TweetComposer.Builder(this);
         builder.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SyncTweetsService.startSync();
     }
 }

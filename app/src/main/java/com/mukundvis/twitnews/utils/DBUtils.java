@@ -46,4 +46,15 @@ public class DBUtils {
     public static int getSkipped(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_SKIPPED));
     }
+
+    public static void closeCursor(Cursor c) {
+        if (c == null || c.isClosed()) {
+            return;
+        }
+        c.close();
+    }
+
+    public static boolean isCursorUsable(Cursor c) {
+        return c != null && c.getCount() > 0;
+    }
 }

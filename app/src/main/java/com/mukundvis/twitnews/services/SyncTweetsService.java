@@ -7,10 +7,9 @@ import com.mukundvis.twitnews.MyApplication;
 import com.mukundvis.twitnews.constants.ApiConstants;
 import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.SyncResponse;
-import com.mukundvis.twitnews.models.SyncTweets;
 import com.mukundvis.twitnews.models.TweetInfo;
-import com.mukundvis.twitnews.models.TweetResponse;
 import com.mukundvis.twitnews.prefs.SharedPrefs;
+import com.mukundvis.twitnews.providers.TweetProvider;
 
 import java.util.List;
 
@@ -63,6 +62,7 @@ public class SyncTweetsService extends IntentService {
             public void success(SyncResponse tweetResponse, Response response) {
                 String m = tweetResponse.message;
                 helper.markTweetsUpdated(tweets);
+                getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
             }
 
             @Override

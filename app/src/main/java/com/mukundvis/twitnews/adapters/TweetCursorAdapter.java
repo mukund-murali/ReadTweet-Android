@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -25,16 +26,47 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         super(context, cursor);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public interface OnButtonClickListener {
+        void onInterested(int position);
+        void onIgnored(int position);
+    }
 
-        public TextView tvScreenName, tvTweet, tvUsername;
+    OnButtonClickListener mListener;
+
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        TextView tvScreenName, tvTweet, tvUsername;
+        Button btnInterested, btnIgnored;
 
         public ViewHolder(View v) {
             super(v);
             tvScreenName = (TextView) v.findViewById(R.id.tv_screen_name);
             tvUsername = (TextView) v.findViewById(R.id.tv_username);
             tvTweet = (TextView) v.findViewById(R.id.tv_tweet);
+            btnIgnored = (Button) v.findViewById(R.id.btn_ignore);
+            btnIgnored.setOnClickListener(this);
+            btnInterested = (Button) v.findViewById(R.id.btn_interested);
+            btnInterested.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mListener ==  null) {
+                return;
+            }
+            switch (v.getId()) {
+                case R.id.btn_ignore:
+                    mListener.onIgnored(getAdapterPosition());
+                    break;
+                case R.id.btn_interested:
+                    mListener.onInterested(getAdapterPosition());
+            }
+        }
+    }
+
+    public void setOnButtonClickListener(final OnButtonClickListener onButtonClickListener) {
+        this.mListener = onButtonClickListener;
     }
 
     public HashMap<Long, MyTweet> tweets = new HashMap<>();
