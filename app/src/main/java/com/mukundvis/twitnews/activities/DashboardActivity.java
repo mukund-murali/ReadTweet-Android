@@ -20,16 +20,14 @@ import com.malinskiy.superrecyclerview.swipe.SparseItemRemoveAnimator;
 import com.malinskiy.superrecyclerview.swipe.SwipeDismissRecyclerViewTouchListener;
 import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.adapters.TweetCursorAdapter;
-import com.mukundvis.twitnews.adapters.TweetRecyclerAdapter;
 import com.mukundvis.twitnews.constants.ApiConstants;
 import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
 import com.mukundvis.twitnews.models.TweetResponse;
 import com.mukundvis.twitnews.providers.TweetProvider;
+import com.mukundvis.twitnews.services.SyncTweetsService;
 import com.mukundvis.twitnews.utils.DBUtils;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
-
-import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -63,14 +61,14 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-    /*
-     * Clears out the adapter's reference to the Cursor.
-     * This prevents memory leaks.
-     */
+        /*
+         * Clears out the adapter's reference to the Cursor.
+         * This prevents memory leaks.
+         */
         mAdapter.changeCursor(null);
     }
 
-    public interface LoggedInApiService {
+    public interface GetTweetsService {
         @GET(ApiConstants.URL_GET_TWEETS)
         void getTweets(
                 @Query("device_id") String deviceId,
@@ -84,7 +82,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     SparseItemRemoveAnimator mSparseAnimator;
 
     RestAdapter restAdapter;
-    LoggedInApiService service;
+    GetTweetsService service;
 
     DBHelper helper;
 
@@ -110,7 +108,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         restAdapter = new RestAdapter.Builder()
                 .setEndpoint(ApiConstants.END_POINT_V2)
                 .build();
-        service = restAdapter.create(LoggedInApiService.class);
+        service = restAdapter.create(GetTweetsService.class);
 
         helper = new DBHelper(this);
         initializeRecyclerView();
@@ -191,9 +189,25 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         activeCursor.moveToPosition(position);
         long tweetId = DBUtils.getTweetId(activeCursor);
         MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
-        int markIgnored = helper.markIgnored(tweet.id);
+        int markIgnored = helper.markIgnored(tweet.id, activeCursor);
         getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
-        int i = 10;
+        SyncTweetsService.startSync();
+    }
+
+    private void markTweetInterested(int position) {
+        activeCursor.moveToPosition(position);
+        long tweetId = DBUtils.getTweetId(activeCursor);
+        MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
+        int markIgnored = helper.markInterested(tweet.id, activeCursor);
+        getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
+    }
+
+    private void markTweetSkipped(int position) {
+        activeCursor.moveToPosition(position);
+        long tweetId = DBUtils.getTweetId(activeCursor);
+        MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
+        int markIgnored = helper.markSkipped(tweet.id, activeCursor);
+        getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
     }
 
     @Override
@@ -203,7 +217,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
     @Override
     public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
-        int i =10;
+        int i = 10;
     }
 
     @Override

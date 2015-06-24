@@ -50,6 +50,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         }
         return tweet;
     }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
         ViewHolder holder = (ViewHolder) viewHolder;

@@ -21,6 +21,8 @@
             android:name=".activities.DashboardActivity"
             android:label="@string/app_name" >
         </activity>
+
+        <service android:name=".services.SyncTweetsService" />
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="bb1a3a1ced3514021724bd265801b0a0d09567bc" />

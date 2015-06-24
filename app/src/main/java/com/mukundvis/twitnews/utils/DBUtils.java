@@ -34,4 +34,16 @@ public class DBUtils {
     public static String getTweetJSON(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_TWEET_JSON));
     }
+
+    public static int getInterested(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_INTERESTED));
+    }
+
+    public static int getIgnored(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_IGNORED));
+    }
+
+    public static int getSkipped(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(DBHelper.COLUMN_SKIPPED));
+    }
 }

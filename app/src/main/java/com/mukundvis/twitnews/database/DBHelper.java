@@ -9,6 +9,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
+
+import com.mukundvis.twitnews.MyApplication;
+import com.mukundvis.twitnews.models.SyncTweets;
+import com.mukundvis.twitnews.models.TweetInfo;
+import com.mukundvis.twitnews.utils.DBUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -30,6 +39,10 @@ public class DBHelper extends SQLiteOpenHelper {
             COLUMN_INTERESTED + " INTEGER DEFAULT 0);";
 
     SQLiteDatabase db, readableDb;
+
+    public static DBHelper getInstance() {
+        return new DBHelper(MyApplication.getInstance());
+    }
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -61,12 +74,58 @@ public class DBHelper extends SQLiteOpenHelper {
         return readableDb.query(TABLE_NAME, null, selection, null, null, null, COLUMN_TWEET_ID + " DESC");
     }
 
-    public int markIgnored(long tweetId) {
+    public int markIgnored(long tweetId, Cursor cursor) {
+        int ignored = DBUtils.getIgnored(cursor);
         String selection = COLUMN_TWEET_ID + "=?";
         String[] selectionArgs = new String[]{tweetId + ""};
         ContentValues values = new ContentValues();
-        values.put(COLUMN_IGNORED, 1);
+        values.put(COLUMN_IGNORED, ignored + 1);
         return db.update(TABLE_NAME, values, selection, selectionArgs);
     }
 
+    public int markInterested(long tweetId, Cursor cursor) {
+        int interested = DBUtils.getInterested(cursor);
+        String selection = COLUMN_TWEET_ID + "=?";
+        String[] selectionArgs = new String[]{tweetId + ""};
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_INTERESTED, interested + 1);
+        return db.update(TABLE_NAME, values, selection, selectionArgs);
+    }
+
+    public int markSkipped(long tweetId, Cursor cursor) {
+        int skipped = DBUtils.getSkipped(cursor);
+        String selection = COLUMN_TWEET_ID + "=?";
+        String[] selectionArgs = new String[]{tweetId + ""};
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SKIPPED, skipped + 1);
+        return db.update(TABLE_NAME, values, selection, selectionArgs);
+    }
+
+    public List<TweetInfo> getTweetsToSync() {
+        String selection = COLUMN_SKIPPED + " > 0 OR " + COLUMN_IGNORED + " > 0 OR " + COLUMN_INTERESTED + " > 0";
+        Cursor cursor = readableDb.query(TABLE_NAME, null, selection, null, null, null, null);
+        List<TweetInfo> tweets = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            TweetInfo info = new TweetInfo(DBUtils.getTweetId(cursor),
+                    DBUtils.getSkipped(cursor), DBUtils.getInterested(cursor),
+                    DBUtils.getIgnored(cursor));
+            tweets.add(info);
+        }
+        return tweets;
+    }
+
+    public int markTweetsUpdated(List<TweetInfo> tweets) {
+        ArrayList<String> tweetIds = new ArrayList<>();
+        for (TweetInfo tweetInfo: tweets) {
+            tweetIds.add(tweetInfo.tweetId + "");
+        }
+        String idsToUpdate = TextUtils.join(", ", tweetIds);
+
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_IGNORED, 0);
+        values.put(COLUMN_SKIPPED, 0);
+        values.put(COLUMN_INTERESTED, 0);
+        return db.update(TABLE_NAME, values, COLUMN_TWEET_ID + " in (" + idsToUpdate + ")", null);
+    }
 }
