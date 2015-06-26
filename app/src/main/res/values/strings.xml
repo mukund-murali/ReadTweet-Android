@@ -4,4 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="action_compose_tweet">Compose Tweet</string>
+    <string name="action_view_learning">Knowledge base</string>
+    <string name="title_kb">Knowledge Base</string>
 </resources>

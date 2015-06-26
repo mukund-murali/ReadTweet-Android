@@ -5,7 +5,7 @@ package com.mukundvis.twitnews.constants;
  */
 public class ApiConstants {
 
-    public static final String HOST = "http://192.168.1.2:3000/";
+    public static final String HOST = "http://192.168.1.4:3000/";
     public static final String END_POINT_V2 = HOST + "api/v2";
     public static final String END_POINT_V1 = HOST + "api/v1";
 
@@ -13,4 +13,5 @@ public class ApiConstants {
 
     public static final String URL_GET_TWEETS = "/tweets";
     public static final String URL_SYNC_TWEETS = "/sync";
+    public static final String URL_GET_KEYWORDS = "/keywords";
 }

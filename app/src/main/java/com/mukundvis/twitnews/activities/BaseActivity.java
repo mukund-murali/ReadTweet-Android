@@ -3,6 +3,7 @@ package com.mukundvis.twitnews.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.Window;
 
 import com.mukundvis.twitnews.MyApplication;
@@ -39,4 +40,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    protected RecyclerView getRecyclerView(int id) {
+        return (RecyclerView) findViewById(id);
+    }
 }

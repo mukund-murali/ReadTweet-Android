@@ -1,5 +1,6 @@
 package com.mukundvis.twitnews.activities;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -44,6 +45,16 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
     private static final int TWEETS_LOADER = 1012;
 
+    SuperRecyclerView mRecyclerView;
+    SparseItemRemoveAnimator mSparseAnimator;
+
+    RestAdapter restAdapter;
+    GetTweetsService service;
+
+    DBHelper helper;
+
+    TweetCursorAdapter mAdapter;
+
     Cursor activeCursor = null;
 
     @Override
@@ -84,19 +95,10 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                 @Query("device_id") String deviceId,
                 @Query("user_id") long userId,
                 @Query("since_tweet_id") String sinceTweetId,
+                @Query("max_tweet_id") String maxTweetId,
                 retrofit.Callback<TweetResponse> callback
         );
     }
-
-    SuperRecyclerView mRecyclerView;
-    SparseItemRemoveAnimator mSparseAnimator;
-
-    RestAdapter restAdapter;
-    GetTweetsService service;
-
-    DBHelper helper;
-
-    TweetCursorAdapter mAdapter;
 
     @Override
     protected int getDefaultLayout() {
@@ -126,10 +128,9 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         getSupportLoaderManager().initLoader(TWEETS_LOADER, null, this);
     }
 
-    private void fetchNewTweets() {
+    private void fetchTweets(String sinceTweetId, String maxTweetId) {
         mRecyclerView.getSwipeToRefresh().setRefreshing(true);
-        String sinceTweetId = helper.getMaxTweetId() + "";
-        service.getTweets(getPrefs().getDeviceId(), getPrefs().getUserId(), sinceTweetId, new Callback<TweetResponse>() {
+        service.getTweets(getPrefs().getDeviceId(), getPrefs().getUserId(), sinceTweetId, maxTweetId, new Callback<TweetResponse>() {
             @Override
             public void success(TweetResponse obj, Response response) {
                 // add the tweets to database
@@ -162,6 +163,17 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                 }
             }
         });
+    }
+
+    private void fetchNewTweets() {
+        String sinceTweetId = helper.getMaxTweetId() + "";
+        String maxTweetId = "";
+        fetchTweets(sinceTweetId, maxTweetId);
+    }
+
+    private void fetchMoreTweets(long maxTweetId) {
+        String sinceTweetId = "";
+        fetchTweets(sinceTweetId, maxTweetId + "");
     }
 
     private void initializeRecyclerView() {
@@ -231,7 +243,15 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
     @Override
     public void onMoreAsked(int numberOfItems, int numberBeforeMore, int currentItemPos) {
-        int i = 10;
+        if (activeCursor == null) {
+            return;
+        }
+        int positionToMove = currentItemPos + numberBeforeMore;
+        activeCursor.moveToPosition(currentItemPos);
+        long maxTweetId = DBUtils.getTweetId(activeCursor);
+        // https://dev.twitter.com/rest/public/timelines for why -1
+        // maxId is inclusive. We don't want the same tweet back.
+        fetchMoreTweets(maxTweetId - 1);
     }
 
     @Override
@@ -247,9 +267,17 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
             case R.id.action_compose:
                 composeTweet();
                 return true;
+            case R.id.action_keywords:
+                startKeywordActivity();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startKeywordActivity() {
+        Intent intent = new Intent(this, KnowledgeBaseActivity.class);
+        startActivity(intent);
     }
 
     private void composeTweet() {
