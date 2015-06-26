@@ -70,9 +70,6 @@ public class KnowledgeBaseActivity extends BaseActivity {
                 if (keywords == null) {
                     return;
                 }
-                for (KeywordWithRelevance keyword: keywords) {
-                    Log.e(DEBUG_TAG, keyword.toString());
-                }
                 KeywordRecyclerAdapter adapter = new KeywordRecyclerAdapter(keywords);
                 rv.setAdapter(adapter);
             }

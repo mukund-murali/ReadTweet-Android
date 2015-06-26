@@ -32,13 +32,14 @@ public class KeywordRecyclerAdapter extends RecyclerView.Adapter<KeywordRecycler
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tvKeyword, tvRelevance, tvOccurence;
+        public TextView tvKeyword, tvRelevance, tvInterested, tvIgnored;
 
         public ViewHolder(View v) {
             super(v);
             tvKeyword = (TextView) v.findViewById(R.id.tv_keyword);
             tvRelevance = (TextView) v.findViewById(R.id.tv_relevance);
-            tvOccurence = (TextView) v.findViewById(R.id.tv_occurence);
+            tvInterested = (TextView) v.findViewById(R.id.tv_interested);
+            tvIgnored = (TextView) v.findViewById(R.id.tv_ignored);
         }
     }
 
@@ -61,8 +62,8 @@ public class KeywordRecyclerAdapter extends RecyclerView.Adapter<KeywordRecycler
         KeywordWithRelevance.Keyword doc = keywordWithRelevance.getDoc();
         holder.tvKeyword.setText(doc.getKeyword());
         holder.tvRelevance.setText(keywordWithRelevance.getRelevance() + "");
-        holder.tvOccurence.setText(doc.getOccurence() + "");
-
+        holder.tvInterested.setText(doc.getInterested() + "");
+        holder.tvIgnored.setText(doc.getIgnored() + "");
     }
 
     @Override

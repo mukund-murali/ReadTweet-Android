@@ -15,12 +15,19 @@ import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
 import com.mukundvis.twitnews.utils.DBUtils;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
  * Created by mukundvis on 23/06/15.
  */
 public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
+
+    private static final String TWITTER_DATE_FORMAT_STRING = "EEE MMM dd HH:mm:ss Z yyyy";
+    private static final DateFormat TWITTER_DATE_FORMAT = new SimpleDateFormat(TWITTER_DATE_FORMAT_STRING);
 
     public TweetCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
@@ -36,7 +43,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView tvScreenName, tvTweet, tvUsername;
+        TextView tvScreenName, tvTweet, tvUsername, tvTimeDiff;
         Button btnInterested, btnIgnored;
 
         public ViewHolder(View v) {
@@ -44,6 +51,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             tvScreenName = (TextView) v.findViewById(R.id.tv_screen_name);
             tvUsername = (TextView) v.findViewById(R.id.tv_username);
             tvTweet = (TextView) v.findViewById(R.id.tv_tweet);
+            tvTimeDiff = (TextView) v.findViewById(R.id.tv_time_diff);
             btnIgnored = (Button) v.findViewById(R.id.btn_ignore);
             btnIgnored.setOnClickListener(this);
             btnInterested = (Button) v.findViewById(R.id.btn_interested);
@@ -88,9 +96,34 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         ViewHolder holder = (ViewHolder) viewHolder;
         long tweetId = DBUtils.getTweetId(cursor);
         MyTweet tweet = getTweet(tweetId, cursor);
-        holder.tvScreenName.setText(tweet.createdAt);
-        holder.tvUsername.setText("@" + tweet.user.name);
+        holder.tvUsername.setText(tweet.user.name);
+        holder.tvScreenName.setText("@" + tweet.user.screenName);
         holder.tvTweet.setText(tweet.text);
+        try {
+            Date date = TWITTER_DATE_FORMAT.parse(tweet.createdAt);
+            holder.tvTimeDiff.setText(getTimeDiffFromNow(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            holder.tvTimeDiff.setText("");
+        }
+    }
+
+    private String getTimeDiffFromNow(Date date) {
+        long diffInMillis = System.currentTimeMillis() - date.getTime();
+        int secondsDiff = (int) (diffInMillis / 1000);
+        if (secondsDiff <= 60) {
+            return secondsDiff + "s";
+        }
+        int minutes = secondsDiff / 60;
+        if (minutes <= 60) {
+            return  minutes + "m";
+        }
+        int hours = minutes / 60;
+        if (hours <= 24) {
+            return hours + "h";
+        }
+        int days = hours / 24;
+        return days + "d";
     }
 
     @Override
