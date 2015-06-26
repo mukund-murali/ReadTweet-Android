@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -66,8 +67,18 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        int pos = mLayoutManager.findFirstVisibleItemPosition();
+        int previousCount = 0;
+        if (activeCursor != null) {
+            previousCount = activeCursor.getCount();
+        }
         activeCursor = data;
         mAdapter.changeCursor(data);
+        if (previousCount > 0) {
+            int newCount = activeCursor.getCount();
+            int newPosition = (newCount - previousCount) + pos;
+            mRecyclerView.getRecyclerView().scrollToPosition(newPosition);
+        }
     }
 
     @Override
@@ -176,10 +187,12 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         fetchTweets(sinceTweetId, maxTweetId + "");
     }
 
+    LinearLayoutManager mLayoutManager;
+
     private void initializeRecyclerView() {
         // TODO: height of the row gets affected when a view is removed. Need to take care of this.
         // TODO: Will setting height common for everything help?
-        RecyclerView.LayoutManager mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
+        mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // swipe to dismiss
