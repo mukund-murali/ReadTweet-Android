@@ -3,6 +3,7 @@ package com.mukundvis.twitnews.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,8 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
     private static final String TWITTER_DATE_FORMAT_STRING = "EEE MMM dd HH:mm:ss Z yyyy";
     private static final DateFormat TWITTER_DATE_FORMAT = new SimpleDateFormat(TWITTER_DATE_FORMAT_STRING);
 
+    private static final String DEBUG_TAG = TweetCursorAdapter.class.getSimpleName();
+
     public TweetCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
     }
@@ -36,10 +39,10 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
     public interface OnButtonClickListener {
         void onInterested(int position);
         void onIgnored(int position);
+        void onTweetClick(int position);
     }
 
     OnButtonClickListener mListener;
-
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -51,6 +54,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             tvScreenName = (TextView) v.findViewById(R.id.tv_screen_name);
             tvUsername = (TextView) v.findViewById(R.id.tv_username);
             tvTweet = (TextView) v.findViewById(R.id.tv_tweet);
+            tvTweet.setOnClickListener(this);
             tvTimeDiff = (TextView) v.findViewById(R.id.tv_time_diff);
             btnIgnored = (Button) v.findViewById(R.id.btn_ignore);
             btnIgnored.setOnClickListener(this);
@@ -69,6 +73,10 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
                     break;
                 case R.id.btn_interested:
                     mListener.onInterested(getAdapterPosition());
+                    break;
+                case R.id.tv_tweet:
+                    mListener.onTweetClick(getAdapterPosition());
+                    break;
             }
         }
     }

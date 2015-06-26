@@ -6,4 +6,5 @@
     <string name="action_compose_tweet">Compose Tweet</string>
     <string name="action_view_learning">Knowledge base</string>
     <string name="title_kb">Knowledge Base</string>
+    <string name="title_show_tweet">Tweet</string>
 </resources>

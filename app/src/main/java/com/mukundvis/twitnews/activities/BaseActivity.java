@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Window;
+import android.widget.LinearLayout;
 
 import com.mukundvis.twitnews.MyApplication;
 import com.mukundvis.twitnews.prefs.SharedPrefs;
@@ -42,5 +43,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected RecyclerView getRecyclerView(int id) {
         return (RecyclerView) findViewById(id);
+    }
+
+    protected LinearLayout getLinearLayout(int id) {
+        return (LinearLayout) findViewById(id);
     }
 }

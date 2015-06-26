@@ -11,9 +11,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.mukundvis.twitnews.MyApplication;
 import com.mukundvis.twitnews.models.TweetInfo;
 import com.mukundvis.twitnews.utils.DBUtils;
+import com.twitter.sdk.android.core.models.Tweet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,5 +152,21 @@ public class DBHelper extends SQLiteOpenHelper {
         int updateResp = 1;
         updateResp = db.update(TABLE_NAME, values, COLUMN_TWEET_ID + " in (" + idsToUpdate + ")", null);
         return updateResp;
+    }
+
+    public Tweet getTweet(long tweetId) {
+        String selection = COLUMN_TWEET_ID + " =?";
+        String[] args = new String[]{tweetId + ""};
+        Cursor c = readableDb.query(TABLE_NAME, new String[] {COLUMN_TWEET_JSON}, selection, args, null, null, null);
+        try {
+            if (DBUtils.isCursorUsable(c)) {
+                c.moveToFirst();
+                Gson gson = new Gson();
+                return gson.fromJson(c.getString(0), Tweet.class);
+            }
+        } finally {
+            DBUtils.closeCursor(c);
+        }
+        return null;
     }
 }

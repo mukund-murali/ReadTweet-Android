@@ -74,11 +74,12 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         }
         activeCursor = data;
         mAdapter.changeCursor(data);
-        if (previousCount > 0) {
+        if (previousCount > 0 && isFetchingNewTweets) {
             int newCount = activeCursor.getCount();
             int newPosition = (newCount - previousCount) + pos;
             mRecyclerView.getRecyclerView().scrollToPosition(newPosition);
         }
+        isFetchingNewTweets = false;
     }
 
     @Override
@@ -98,6 +99,15 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     @Override
     public void onIgnored(int position) {
         markTweetIgnored(position);
+    }
+
+    @Override
+    public void onTweetClick(int position) {
+        activeCursor.moveToPosition(position);
+        long tweetId = DBUtils.getTweetId(activeCursor);
+        Intent intent = new Intent(this, ShowTweetActivity.class);
+        intent.putExtra(ShowTweetActivity.KEY_TWEET_ID, tweetId);
+        startActivity(intent);
     }
 
     public interface GetTweetsService {
@@ -144,6 +154,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         service.getTweets(getPrefs().getDeviceId(), getPrefs().getUserId(), sinceTweetId, maxTweetId, new Callback<TweetResponse>() {
             @Override
             public void success(TweetResponse obj, Response response) {
+                removeLoadingViews();
                 // add the tweets to database
                 Gson gson = new Gson();
                 if (obj.tweets == null) {
@@ -154,14 +165,12 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                     long tweetId = tweet.id;
                     long insertResp = helper.createTweet(tweetId, tweetJson);
                     getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
-                    int i = 10;
                 }
-                mRecyclerView.getSwipeToRefresh().setRefreshing(false);
             }
 
             @Override
             public void failure(RetrofitError error) {
-                mRecyclerView.getSwipeToRefresh().setRefreshing(false);
+                removeLoadingViews();
                 if (error.getResponse() == null) {
                     return;
                 }
@@ -176,13 +185,22 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         });
     }
 
+    private void removeLoadingViews() {
+        mRecyclerView.getSwipeToRefresh().setRefreshing(false);
+        mRecyclerView.getMoreProgressView().setVisibility(View.GONE);
+    }
+
+    boolean isFetchingNewTweets = false;
+
     private void fetchNewTweets() {
+        isFetchingNewTweets = true;
         String sinceTweetId = helper.getMaxTweetId() + "";
         String maxTweetId = "";
         fetchTweets(sinceTweetId, maxTweetId);
     }
 
     private void fetchMoreTweets(long maxTweetId) {
+        isFetchingNewTweets = false;
         String sinceTweetId = "";
         fetchTweets(sinceTweetId, maxTweetId + "");
     }
@@ -264,7 +282,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         long maxTweetId = DBUtils.getTweetId(activeCursor);
         // https://dev.twitter.com/rest/public/timelines for why -1
         // maxId is inclusive. We don't want the same tweet back.
-        fetchMoreTweets(maxTweetId - 1);
+        fetchMoreTweets(maxTweetId);
     }
 
     @Override
