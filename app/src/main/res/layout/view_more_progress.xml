@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center"
-    android:padding="@dimen/content_gutter">
+    android:padding="@dimen/card_padding">
 
     <ProgressBar
         android:id="@+id/yourId"
@@ -16,6 +16,7 @@
         android:layout_marginLeft="@dimen/content_gutter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="@dimen/text_sub_head"
         android:text="Loading." />
 
 </LinearLayout>
