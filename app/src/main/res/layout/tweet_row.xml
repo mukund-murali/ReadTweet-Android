@@ -7,82 +7,111 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/list_padding">
+        android:orientation="horizontal"
+        android:padding="@dimen/list_padding_more">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/tv_username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mukund Muralikrishnan"
-                android:textSize="@dimen/text_regular"
-                style="@style/TVPrimary"
-                android:textStyle="bold" />
-
-            <TextView
-                android:text="news"
-                android:id="@+id/view_has_article"
-                android:visibility="gone"
-                android:layout_marginRight="@dimen/content_gutter"
-                android:layout_width="wrap_content"
-                style="@style/TVPrimary"
-                android:layout_toLeftOf="@+id/tv_time_diff"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/tv_time_diff"
-                style="@style/TVPrimary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text="3h"
-                android:textSize="@dimen/text_small" />
-
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/tv_screen_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="mukundvis"
-            style="@style/TVPrimary"
-            android:textSize="@dimen/text_small" />
-
-        <TextView
-            android:id="@+id/tv_tweet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_padding"
-            android:text="Tweet"
-            style="@style/TVPrimary"
-            android:textSize="@dimen/text_regular" />
+        <ImageView
+            android:id="@+id/iv_dp"
+            android:layout_width="@dimen/twitter_dp"
+            android:layout_height="@dimen/twitter_dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:layout_marginTop="@dimen/card_padding">
+            android:layout_marginLeft="@dimen/list_padding_more"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_ignore"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_username"
+                    android:textColor="@color/username"
+                    android:fontFamily="sans-serif-light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mukund Muralikrishnan"
+                    android:textSize="@dimen/text_regular"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_time_diff"
+                    style="@style/TVPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="3h"
+                    android:textSize="@dimen/text_small" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_screen_name"
+                android:textColor="@color/screenname"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:layout_width="wrap_content"
-                style="@style/TVPrimary"
+                android:fontFamily="sans-serif-light"
                 android:layout_height="wrap_content"
-                android:text="Dont Like" />
-
-            <Button
-                android:id="@+id/btn_interested"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/TVPrimary"
-                android:focusable="false"
-                android:text="Interested" />
-
+                android:text="mukundvis"/>
         </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_main_picture"
+        android:layout_width="match_parent"
+        android:scaleType="fitStart"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        android:layout_marginLeft="@dimen/list_padding_more"
+        android:layout_marginRight="@dimen/list_padding_more"
+        android:layout_marginBottom="@dimen/list_padding_more"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_tweet"
+        android:textColor="@color/tweet"
+        android:layout_marginLeft="@dimen/list_padding_more"
+        android:layout_marginRight="@dimen/list_padding_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tweet"
+        android:fontFamily="sans-serif-light"
+        android:textSize="@dimen/text_regular" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_padding"
+        android:gravity="right">
+
+        <Button
+            android:id="@+id/btn_ignore"
+            style="@style/TVPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dont Like" />
+
+        <Button
+            android:id="@+id/btn_interested"
+            style="@style/TVPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:text="Interested" />
+
+
+        <Button
+            android:id="@+id/view_has_article"
+            style="@style/TVPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/content_gutter"
+            android:layout_toLeftOf="@+id/tv_time_diff"
+            android:text="Read"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <View style="@style/HorizontalLine" />

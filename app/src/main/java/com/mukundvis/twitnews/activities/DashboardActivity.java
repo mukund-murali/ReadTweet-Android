@@ -103,11 +103,21 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
 
     @Override
     public void onTweetClick(int position) {
+        startShowTweetActivity(position);
+    }
+
+    private void startShowTweetActivity(int position) {
+        markTweetInterested(position);
         activeCursor.moveToPosition(position);
         long tweetId = DBUtils.getTweetId(activeCursor);
         Intent intent = new Intent(this, ShowTweetActivity.class);
         intent.putExtra(ShowTweetActivity.KEY_TWEET_ID, tweetId);
         startActivity(intent);
+    }
+
+    @Override
+    public void onRead(int position) {
+        startShowTweetActivity(position);
     }
 
     public interface GetTweetsService {

@@ -3,19 +3,18 @@ package com.mukundvis.twitnews.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.mukundvis.twitnews.R;
-import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
 import com.mukundvis.twitnews.utils.DBUtils;
-import com.mukundvis.twitnews.utils.TwitterUtils;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -46,8 +45,12 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
 
     public interface OnButtonClickListener {
         void onInterested(int position);
+
         void onIgnored(int position);
+
         void onTweetClick(int position);
+
+        void onRead(int adapterPosition);
     }
 
     OnButtonClickListener mListener;
@@ -58,6 +61,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         Button btnInterested, btnIgnored;
 
         View baseView, viewHasArticle;
+        ImageView ivDp, ivMainPicture;
 
         public ViewHolder(View v) {
             super(v);
@@ -71,12 +75,15 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             btnInterested = (Button) v.findViewById(R.id.btn_interested);
             btnInterested.setOnClickListener(this);
             viewHasArticle = v.findViewById(R.id.view_has_article);
+            viewHasArticle.setOnClickListener(this);
+            ivDp = (ImageView) v.findViewById(R.id.iv_dp);
+            ivMainPicture = (ImageView) v.findViewById(R.id.iv_main_picture);
             baseView = v;
         }
 
         @Override
         public void onClick(View v) {
-            if (mListener ==  null) {
+            if (mListener == null) {
                 return;
             }
             switch (v.getId()) {
@@ -88,6 +95,9 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
                     break;
                 case R.id.tv_tweet:
                     mListener.onTweetClick(getAdapterPosition());
+                    break;
+                case R.id.view_has_article:
+                    mListener.onRead(getAdapterPosition());
                     break;
             }
         }
@@ -137,6 +147,17 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         } else {
             holder.viewHasArticle.setVisibility(View.GONE);
         }
+        if (tweet.hasPicture()) {
+            String url = tweet.entities.media.get(0).mediaUrl;
+            holder.ivMainPicture.setVisibility(View.VISIBLE);
+            Picasso.with(context).load(url).placeholder(R.drawable.place_holder).into(holder.ivMainPicture);
+        } else {
+            holder.ivMainPicture.setVisibility(View.GONE);
+        }
+        String url = tweet.user.profileImageUrlHttps;
+        // start with the ImageView
+        // Picasso.with(context).cancelRequest(holder.ivDp);
+        Picasso.with(context).load(url).into(holder.ivDp);
     }
 
     private String getTimeDiffFromNow(Date date) {
@@ -147,7 +168,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         }
         int minutes = secondsDiff / 60;
         if (minutes <= 60) {
-            return  minutes + "m";
+            return minutes + "m";
         }
         int hours = minutes / 60;
         if (hours <= 24) {

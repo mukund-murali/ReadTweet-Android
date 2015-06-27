@@ -67,7 +67,13 @@ public class MyTweet extends com.twitter.sdk.android.core.models.Tweet {
         }
         if (hasPicture()) {
             MediaEntity img = media.get(0);
-            tweetText = tweetText.replace(img.url, img.displayUrl);
+            tweetText = tweetText.replace(img.url, "");
+        }
+        tweetText = tweetText.trim();
+        if (tweetText.charAt(tweetText.length() - 1) == ':') {
+            StringBuilder builder = new StringBuilder(tweetText);
+            builder.setCharAt(tweetText.length() - 1, '.');
+            tweetText = builder.toString();
         }
         return tweetText;
     }
