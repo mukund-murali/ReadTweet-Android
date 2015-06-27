@@ -163,7 +163,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                 for (MyTweet tweet : obj.tweets) {
                     String tweetJson = gson.toJson(tweet);
                     long tweetId = tweet.id;
-                    long insertResp = helper.createTweet(tweetId, tweetJson);
+                    helper.createTweet(tweetId, tweetJson);
                     getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
                 }
             }
@@ -216,7 +216,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         // swipe to dismiss
         mRecyclerView.setupSwipeToDismiss(this);
         mSparseAnimator = new SparseItemRemoveAnimator();
-        // mRecyclerView.getRecyclerView().setItemAnimator(mSparseAnimator);
+        mRecyclerView.getRecyclerView().setItemAnimator(mSparseAnimator);
 
         // onMore
         mRecyclerView.setRefreshListener(this);

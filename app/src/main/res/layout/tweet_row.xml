@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="@dimen/list_padding">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -20,10 +20,22 @@
                 android:layout_height="wrap_content"
                 android:text="Mukund Muralikrishnan"
                 android:textSize="@dimen/text_regular"
+                style="@style/TVPrimary"
                 android:textStyle="bold" />
 
             <TextView
+                android:text="news"
+                android:id="@+id/view_has_article"
+                android:visibility="gone"
+                android:layout_marginRight="@dimen/content_gutter"
+                android:layout_width="wrap_content"
+                style="@style/TVPrimary"
+                android:layout_toLeftOf="@+id/tv_time_diff"
+                android:layout_height="wrap_content" />
+
+            <TextView
                 android:id="@+id/tv_time_diff"
+                style="@style/TVPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -37,6 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="mukundvis"
+            style="@style/TVPrimary"
             android:textSize="@dimen/text_small" />
 
         <TextView
@@ -45,6 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/card_padding"
             android:text="Tweet"
+            style="@style/TVPrimary"
             android:textSize="@dimen/text_regular" />
 
         <LinearLayout
@@ -56,6 +70,7 @@
             <Button
                 android:id="@+id/btn_ignore"
                 android:layout_width="wrap_content"
+                style="@style/TVPrimary"
                 android:layout_height="wrap_content"
                 android:text="Dont Like" />
 
@@ -63,6 +78,7 @@
                 android:id="@+id/btn_interested"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/TVPrimary"
                 android:focusable="false"
                 android:text="Interested" />
 

@@ -35,9 +35,13 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
 
     Context context;
 
+    int relevantColor, nonRelevantColor;
+
     public TweetCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
         this.context = context;
+        relevantColor = context.getResources().getColor(R.color.relevant);
+        nonRelevantColor = context.getResources().getColor(R.color.non_relevant);
     }
 
     public interface OnButtonClickListener {
@@ -53,7 +57,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         TextView tvScreenName, tvTweet, tvUsername, tvTimeDiff;
         Button btnInterested, btnIgnored;
 
-        View baseView;
+        View baseView, viewHasArticle;
 
         public ViewHolder(View v) {
             super(v);
@@ -66,6 +70,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             btnIgnored.setOnClickListener(this);
             btnInterested = (Button) v.findViewById(R.id.btn_interested);
             btnInterested.setOnClickListener(this);
+            viewHasArticle = v.findViewById(R.id.view_has_article);
             baseView = v;
         }
 
@@ -113,7 +118,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         MyTweet tweet = getTweet(tweetId, cursor);
         holder.tvUsername.setText(tweet.user.name);
         holder.tvScreenName.setText("@" + tweet.user.screenName);
-        String displayText = TwitterUtils.getFormattedTweet(tweet);
+        String displayText = tweet.getFormattedText();
         holder.tvTweet.setText(displayText);
         try {
             Date date = TWITTER_DATE_FORMAT.parse(tweet.createdAt);
@@ -123,9 +128,14 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             holder.tvTimeDiff.setText("");
         }
         if (tweet.isRelevant()) {
-            holder.baseView.setBackgroundColor(context.getResources().getColor(R.color.relevant));
+            // holder.baseView.setBackgroundColor(relevantColor);
         } else {
-            holder.baseView.setBackgroundColor(context.getResources().getColor(R.color.non_relevant));
+            holder.baseView.setBackgroundColor(nonRelevantColor);
+        }
+        if (tweet.hasArticle()) {
+            holder.viewHasArticle.setVisibility(View.VISIBLE);
+        } else {
+            holder.viewHasArticle.setVisibility(View.GONE);
         }
     }
 

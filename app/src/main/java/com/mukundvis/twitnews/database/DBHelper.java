@@ -22,8 +22,11 @@ import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
 
+    private static final int VERSION_NO = 2;
+
     public static final String DATABASE_NAME = "TwitNews.tweets";
     public static final String TABLE_NAME = "tweets";
+
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_TWEET_ID = "tweet_id";
     public static final String COLUMN_TWEET_JSON = "tweet_json";
@@ -31,6 +34,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_IGNORED = "ignored";
     public static final String COLUMN_INTERESTED = "interested";
     private static final String COLUMN_IS_SYNCED = "is_synced";
+    private static final String COLUMN_IS_RELEVANT = "is_relevant";
 
     private static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
             COLUMN_ID + " PRIMARY KEY, " +
@@ -39,6 +43,7 @@ public class DBHelper extends SQLiteOpenHelper {
             COLUMN_SKIPPED + " INTEGER DEFAULT 0, " +
             COLUMN_IGNORED + " INTEGER DEFAULT 0, " +
             COLUMN_IS_SYNCED + " BOOLEAN DEFAULT 0," +
+            COLUMN_IS_RELEVANT + " BOOLEAN DEFAULT 1," +
             COLUMN_INTERESTED + " INTEGER DEFAULT 0);";
 
     SQLiteDatabase db, readableDb;
@@ -48,7 +53,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, 1);
+        super(context, DATABASE_NAME, null, VERSION_NO);
         db = this.getWritableDatabase();
         readableDb = this.getReadableDatabase();
     }
@@ -60,7 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS contacts");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
 

@@ -18,4 +18,8 @@
         <item name="android:background">#ddd</item>
     </style>
 
+    <style name="TVPrimary">
+        <item name="android:textColor">@color/primary_dark</item>
+    </style>
+
 </resources>

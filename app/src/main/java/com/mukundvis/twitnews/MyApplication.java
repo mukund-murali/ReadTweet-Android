@@ -2,6 +2,7 @@ package com.mukundvis.twitnews;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
 import com.mukundvis.twitnews.prefs.SharedPrefs;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -28,7 +29,7 @@ public class MyApplication extends Application {
         super.onCreate();
         sInstance = this;
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig));
+        Fabric.with(this, new Twitter(authConfig), new Crashlytics());
     }
 
     public static MyApplication getInstance() {
