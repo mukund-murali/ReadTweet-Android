@@ -277,7 +277,6 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         if (activeCursor == null) {
             return;
         }
-        int positionToMove = currentItemPos + numberBeforeMore;
         activeCursor.moveToPosition(currentItemPos);
         long maxTweetId = DBUtils.getTweetId(activeCursor);
         // https://dev.twitter.com/rest/public/timelines for why -1
@@ -317,8 +316,8 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         SyncTweetsService.startSync();
     }
 }

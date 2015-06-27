@@ -15,6 +15,7 @@ import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
 import com.mukundvis.twitnews.utils.DBUtils;
+import com.mukundvis.twitnews.utils.TwitterUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -32,8 +33,11 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
 
     private static final String DEBUG_TAG = TweetCursorAdapter.class.getSimpleName();
 
+    Context context;
+
     public TweetCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
+        this.context = context;
     }
 
     public interface OnButtonClickListener {
@@ -49,6 +53,8 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         TextView tvScreenName, tvTweet, tvUsername, tvTimeDiff;
         Button btnInterested, btnIgnored;
 
+        View baseView;
+
         public ViewHolder(View v) {
             super(v);
             tvScreenName = (TextView) v.findViewById(R.id.tv_screen_name);
@@ -60,6 +66,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             btnIgnored.setOnClickListener(this);
             btnInterested = (Button) v.findViewById(R.id.btn_interested);
             btnInterested.setOnClickListener(this);
+            baseView = v;
         }
 
         @Override
@@ -106,13 +113,19 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         MyTweet tweet = getTweet(tweetId, cursor);
         holder.tvUsername.setText(tweet.user.name);
         holder.tvScreenName.setText("@" + tweet.user.screenName);
-        holder.tvTweet.setText(tweet.text);
+        String displayText = TwitterUtils.getFormattedTweet(tweet);
+        holder.tvTweet.setText(displayText);
         try {
             Date date = TWITTER_DATE_FORMAT.parse(tweet.createdAt);
             holder.tvTimeDiff.setText(getTimeDiffFromNow(date));
         } catch (ParseException e) {
             e.printStackTrace();
             holder.tvTimeDiff.setText("");
+        }
+        if (tweet.isRelevant()) {
+            holder.baseView.setBackgroundColor(context.getResources().getColor(R.color.relevant));
+        } else {
+            holder.baseView.setBackgroundColor(context.getResources().getColor(R.color.non_relevant));
         }
     }
 

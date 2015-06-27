@@ -17,6 +17,10 @@ import java.util.List;
  */
 public class MyTweet extends com.twitter.sdk.android.core.models.Tweet {
 
+    public boolean isRelevant() {
+        return isRelevant;
+    }
+
     boolean isRelevant = false;
 
     public MyTweet(Coordinates coordinates, String createdAt, Object currentUserRetweet, TweetEntities entities, Integer favoriteCount, boolean favorited, String filterLevel, long id, String idStr, String inReplyToScreenName, long inReplyToStatusId, String inReplyToStatusIdStr, long inReplyToUserId, String inReplyToUserIdStr, String lang, Place place, boolean possiblySensitive, Object scopes, int retweetCount, boolean retweeted, com.twitter.sdk.android.core.models.Tweet retweetedStatus, String source, String text, boolean truncated, User user, boolean withheldCopyright, List<String> withheldInCountries, String withheldScope, boolean isRelevant) {

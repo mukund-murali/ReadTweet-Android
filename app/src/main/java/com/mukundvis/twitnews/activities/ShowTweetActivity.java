@@ -8,7 +8,11 @@ import android.widget.Toast;
 import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.database.DBHelper;
 import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.models.HashtagEntity;
+import com.twitter.sdk.android.core.models.MediaEntity;
 import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.models.TweetEntities;
+import com.twitter.sdk.android.core.models.UrlEntity;
 import com.twitter.sdk.android.tweetui.LoadCallback;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
@@ -39,7 +43,7 @@ public class ShowTweetActivity  extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e(DEBUG_TAG, tweetId + ";");
+
         DBHelper helper = new DBHelper(this);
         Tweet tweet = helper.getTweet(tweetId);
         if (tweet == null) {
