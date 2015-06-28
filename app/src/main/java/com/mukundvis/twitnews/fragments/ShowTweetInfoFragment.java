@@ -5,10 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
+import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetView;
 
 /**
@@ -42,11 +44,15 @@ public class ShowTweetInfoFragment extends BaseFragment {
 
     @Override
     protected void extractArguments(Bundle arguments) {
-
+        tweetId = arguments.getLong(KEY_TWEET_ID, -1);
     }
 
     @Override
     protected void initViews() {
+        if (tweetId == -1) {
+            Toast.makeText(getActivity(), "Tweet not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
         MyTweet tweet = DBHelper.getInstance().getTweet(tweetId);
         llContainer.addView(new TweetView(getActivity(), tweet));
     }

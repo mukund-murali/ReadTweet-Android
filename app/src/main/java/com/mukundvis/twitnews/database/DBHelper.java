@@ -160,19 +160,30 @@ public class DBHelper extends SQLiteOpenHelper {
         return updateResp;
     }
 
-    public MyTweet getTweet(long tweetId) {
+    public String getTweetJSON(long tweetId) {
         String selection = COLUMN_TWEET_ID + " =?";
         String[] args = new String[]{tweetId + ""};
         Cursor c = readableDb.query(TABLE_NAME, new String[] {COLUMN_TWEET_JSON}, selection, args, null, null, null);
         try {
             if (DBUtils.isCursorUsable(c)) {
                 c.moveToFirst();
-                Gson gson = new Gson();
-                return gson.fromJson(c.getString(0), MyTweet.class);
+                return c.getString(0);
             }
         } finally {
             DBUtils.closeCursor(c);
         }
         return null;
+    }
+
+    public MyTweet getTweet(long tweetId) {
+        String tweetJSON = getTweetJSON(tweetId);
+        Gson gson = new Gson();
+        return gson.fromJson(tweetJSON, MyTweet.class);
+    }
+
+    public Tweet getOriginalTweet(long tweetId) {
+        String tweetJSON = getTweetJSON(tweetId);
+        Gson gson = new Gson();
+        return gson.fromJson(tweetJSON, Tweet.class);
     }
 }
