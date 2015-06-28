@@ -77,4 +77,12 @@ public class MyTweet extends com.twitter.sdk.android.core.models.Tweet {
         }
         return tweetText;
     }
+
+    public String getArticleURL() {
+        if (hasArticle()) {
+            List<UrlEntity> urls = entities.urls;
+            return urls.get(0).url;
+        }
+        return null;
+    }
 }

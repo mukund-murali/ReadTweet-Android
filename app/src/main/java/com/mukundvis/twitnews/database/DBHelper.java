@@ -13,6 +13,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.mukundvis.twitnews.MyApplication;
+import com.mukundvis.twitnews.models.MyTweet;
 import com.mukundvis.twitnews.models.TweetInfo;
 import com.mukundvis.twitnews.utils.DBUtils;
 import com.twitter.sdk.android.core.models.Tweet;
@@ -159,7 +160,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return updateResp;
     }
 
-    public Tweet getTweet(long tweetId) {
+    public MyTweet getTweet(long tweetId) {
         String selection = COLUMN_TWEET_ID + " =?";
         String[] args = new String[]{tweetId + ""};
         Cursor c = readableDb.query(TABLE_NAME, new String[] {COLUMN_TWEET_JSON}, selection, args, null, null, null);
@@ -167,7 +168,7 @@ public class DBHelper extends SQLiteOpenHelper {
             if (DBUtils.isCursorUsable(c)) {
                 c.moveToFirst();
                 Gson gson = new Gson();
-                return gson.fromJson(c.getString(0), Tweet.class);
+                return gson.fromJson(c.getString(0), MyTweet.class);
             }
         } finally {
             DBUtils.closeCursor(c);

@@ -30,6 +30,7 @@ import com.mukundvis.twitnews.providers.TweetProvider;
 import com.mukundvis.twitnews.services.SyncTweetsService;
 import com.mukundvis.twitnews.utils.DBUtils;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+import com.twitter.sdk.android.tweetui.TweetUtils;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -107,17 +108,26 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     }
 
     private void startShowTweetActivity(int position) {
+        startShowTweetActivity(position, ShowTweetActivity.PAGE_TWEET);
+    }
+
+    private void startShowTweetActivity(int position, int pagerPosition) {
         markTweetInterested(position);
         activeCursor.moveToPosition(position);
         long tweetId = DBUtils.getTweetId(activeCursor);
         Intent intent = new Intent(this, ShowTweetActivity.class);
         intent.putExtra(ShowTweetActivity.KEY_TWEET_ID, tweetId);
+        intent.putExtra(ShowTweetActivity.KEY_PAGE_TO_OPEN, pagerPosition);
         startActivity(intent);
     }
 
     @Override
     public void onRead(int position) {
-        startShowTweetActivity(position);
+        startShowTweetActivityWithArticleOpen(position);
+    }
+
+    private void startShowTweetActivityWithArticleOpen(int position) {
+        startShowTweetActivity(position, ShowTweetActivity.PAGE_ARTICLE);
     }
 
     public interface GetTweetsService {
