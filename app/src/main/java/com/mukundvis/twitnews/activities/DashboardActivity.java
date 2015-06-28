@@ -5,9 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -325,6 +323,19 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
         int markIgnored = helper.markIgnored(tweet.id, activeCursor);
         getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
+        showSnackForTweetIgnore(tweetId);
+    }
+
+    private void showSnackForTweetIgnore(final long tweetId) {
+        Snackbar.make(getRootView(), R.string.tweet_marked_ignored, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        helper.clearIgnored(tweetId);
+                        getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
+                    }
+                })
+                .show();
     }
 
     private void markTweetInterested(int position) {

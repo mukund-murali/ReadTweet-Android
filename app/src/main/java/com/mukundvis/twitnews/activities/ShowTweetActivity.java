@@ -62,8 +62,8 @@ public class ShowTweetActivity  extends BaseActivity {
 
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setCurrentItem(pageToOpen);
         setupActionBar();
+        mPager.setCurrentItem(pageToOpen);
     }
 
     private void setupActionBar() {

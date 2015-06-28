@@ -195,4 +195,14 @@ public class DBHelper extends SQLiteOpenHelper {
         Gson gson = new Gson();
         return gson.fromJson(tweetJSON, Tweet.class);
     }
+
+    public int clearIgnored(long tweetId) {
+        String selection = COLUMN_TWEET_ID + "=?";
+        String[] selectionArgs = new String[]{tweetId + ""};
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_IGNORED, 0);
+        values.put(COLUMN_SKIPPED, 1);
+        values.put(COLUMN_IS_SYNCED, Boolean.FALSE);
+        return db.update(TABLE_NAME, values, selection, selectionArgs);
+    }
 }

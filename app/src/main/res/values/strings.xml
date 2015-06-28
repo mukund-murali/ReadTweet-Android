@@ -17,4 +17,6 @@
     <string name="share_using">Share</string>
     <string name="goto_top">Top</string>
     <string name="new_tweets_loaded">New tweets loaded</string>
+    <string name="undo">Undo</string>
+    <string name="tweet_marked_ignored">Tweet marked ignored</string>
 </resources>
