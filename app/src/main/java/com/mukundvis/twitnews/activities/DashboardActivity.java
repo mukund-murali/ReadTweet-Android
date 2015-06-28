@@ -199,9 +199,9 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         Toolbar toolbar = getToolbar();
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setLogo(R.drawable.ic_actionbar);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_actionbar);
     }
 
     private void fetchTweets(String sinceTweetId, String maxTweetId, final boolean isAutomatic) {
@@ -386,6 +386,9 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                mRecyclerView.getRecyclerView().scrollToPosition(0) ;
+                return true;
             case R.id.action_compose:
                 composeTweet();
                 return true;
