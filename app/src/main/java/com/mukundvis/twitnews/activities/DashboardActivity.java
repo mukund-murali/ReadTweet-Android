@@ -2,18 +2,26 @@ package com.mukundvis.twitnews.activities;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -30,8 +38,11 @@ import com.mukundvis.twitnews.models.TweetResponse;
 import com.mukundvis.twitnews.providers.TweetProvider;
 import com.mukundvis.twitnews.services.SyncTweetsService;
 import com.mukundvis.twitnews.utils.DBUtils;
+import com.mukundvis.twitnews.utils.Utils;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
-import com.twitter.sdk.android.tweetui.TweetUtils;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -44,7 +55,10 @@ import retrofit.http.Query;
  * Created by mukundvis on 21/06/15.
  */
 public class DashboardActivity extends BaseLoggedInActivity implements SwipeDismissRecyclerViewTouchListener.DismissCallbacks,
-        SwipeRefreshLayout.OnRefreshListener, OnMoreListener, LoaderManager.LoaderCallbacks<Cursor>,TweetCursorAdapter.OnButtonClickListener {
+        SwipeRefreshLayout.OnRefreshListener, OnMoreListener, LoaderManager.LoaderCallbacks<Cursor>, TweetCursorAdapter.OnButtonClickListener {
+
+    private static final int AUTO_LOAD_DELAY_SECONDS = 90;
+    private static final int AUTO_LOAD_PERIOD_SECONDS = 60;
 
     private static final int TWEETS_LOADER = 1012;
     private static final String DEBUG_TAG = DashboardActivity.class.getSimpleName();
@@ -56,10 +70,14 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     GetTweetsService service;
 
     DBHelper helper;
-
     TweetCursorAdapter mAdapter;
-
     Cursor activeCursor = null;
+
+    LinearLayout llContainer;
+
+    Timer timer;
+    TimerTask timerTask;
+    final Handler handler = new Handler();
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -157,6 +175,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     @Override
     protected void getViewReferences() {
         mRecyclerView = (SuperRecyclerView) findViewById(R.id.rv_tweets);
+        llContainer = getLinearLayout(R.id.ll_container);
     }
 
     @Override
@@ -175,9 +194,20 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         initializeRecyclerView();
         fetchNewTweets();
         getSupportLoaderManager().initLoader(TWEETS_LOADER, null, this);
+        setupActionBar();
     }
 
-    private void fetchTweets(String sinceTweetId, String maxTweetId) {
+    private void setupActionBar() {
+        Toolbar toolbar = getToolbar();
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setLogo(R.drawable.ic_actionbar);
+    }
+
+    private void fetchTweets(String sinceTweetId, String maxTweetId, final boolean isAutomatic) {
+        showSnackIfInternetNA();
         mRecyclerView.getSwipeToRefresh().setRefreshing(true);
         service.getTweets(getPrefs().getDeviceId(), getPrefs().getUserId(), sinceTweetId, maxTweetId, new Callback<TweetResponse>() {
             @Override
@@ -185,7 +215,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                 removeLoadingViews();
                 // add the tweets to database
                 Gson gson = new Gson();
-                if (obj.tweets == null) {
+                if (obj.tweets == null || obj.tweets.size() == 0) {
                     return;
                 }
                 for (MyTweet tweet : obj.tweets) {
@@ -193,6 +223,9 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                     long tweetId = tweet.id;
                     helper.createTweet(tweetId, tweetJson);
                     getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
+                }
+                if (isAutomatic) {
+                    nudgeUserToGoToTop();
                 }
             }
 
@@ -213,6 +246,17 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         });
     }
 
+    private void nudgeUserToGoToTop() {
+        Snackbar.make(getRootView(), R.string.new_tweets_loaded, Snackbar.LENGTH_LONG)
+                .setAction(R.string.goto_top, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mRecyclerView.getRecyclerView().scrollToPosition(0);
+                    }
+                })
+                .show();
+    }
+
     private void removeLoadingViews() {
         mRecyclerView.getSwipeToRefresh().setRefreshing(false);
         mRecyclerView.getMoreProgressView().setVisibility(View.GONE);
@@ -221,16 +265,20 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     boolean isFetchingNewTweets = false;
 
     private void fetchNewTweets() {
+        fetchNewTweets(false);
+    }
+
+    private void fetchNewTweets(boolean isAutomatic) {
         isFetchingNewTweets = true;
         String sinceTweetId = helper.getMaxTweetId() + "";
         String maxTweetId = "";
-        fetchTweets(sinceTweetId, maxTweetId);
+        fetchTweets(sinceTweetId, maxTweetId, isAutomatic);
     }
 
     private void fetchMoreTweets(long maxTweetId) {
         isFetchingNewTweets = false;
         String sinceTweetId = "";
-        fetchTweets(sinceTweetId, maxTweetId + "");
+        fetchTweets(sinceTweetId, maxTweetId + "", false);
     }
 
     LinearLayoutManager mLayoutManager;
@@ -313,8 +361,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         }
         activeCursor.moveToPosition(currentItemPos);
         long maxTweetId = DBUtils.getTweetId(activeCursor);
-        // https://dev.twitter.com/rest/public/timelines for why -1
-        // maxId is inclusive. We don't want the same tweet back.
+        // https://dev.twitter.com/rest/public/timelines
         fetchMoreTweets(maxTweetId);
     }
 
@@ -336,9 +383,25 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
                 return true;
             case R.id.action_settings:
                 startSettingsActivity();
+                return true;
+            case R.id.action_how_it_works:
+                Intent intent = new Intent(this, HowItWorksActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.action_like_this:
+                initiateUserLikesAppFlow();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void initiateUserLikesAppFlow() {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
+                Uri.fromParts("mailto", "mukund.muralikrishnan@gmail.com", null));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Awesome work!");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Hey Mukund, ");
+        startActivity(Intent.createChooser(emailIntent, "Email via"));
     }
 
     private void startSettingsActivity() {
@@ -360,5 +423,46 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     protected void onPause() {
         super.onPause();
         SyncTweetsService.startSync();
+        stopTimer();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startTimer();
+    }
+
+    public void startTimer() {
+        // If user is not online, do not try loading tweets.
+        if (!Utils.isOnline(this)) {
+            return;
+        }
+        timer = new Timer();
+        initializeTimerTask();
+        // start after 1 minute and run every 30 seconds.
+        timer.schedule(timerTask, AUTO_LOAD_DELAY_SECONDS * 1000, AUTO_LOAD_PERIOD_SECONDS * 1000);
+    }
+
+    public void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    public void initializeTimerTask() {
+
+        timerTask = new TimerTask() {
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        if (Utils.isOnline(DashboardActivity.this)) {
+                            fetchNewTweets(true);
+                        }
+                    }
+                });
+            }
+        };
+    }
+
 }

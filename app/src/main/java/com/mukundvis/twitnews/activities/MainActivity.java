@@ -15,6 +15,8 @@ import retrofit.http.FormUrlEncoded;
 import retrofit.http.POST;
 
 import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.twitter.sdk.android.core.Result;
@@ -22,7 +24,13 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this, HowItWorksActivity.class);
+        startActivity(intent);
+    }
 
     public interface LoginService {
         @FormUrlEncoded
@@ -37,6 +45,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private TwitterLoginButton loginButton;
+    private Button btnKnowMore;
 
     @Override
     protected int getDefaultLayout() {
@@ -46,6 +55,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void getViewReferences() {
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        btnKnowMore = getButton(R.id.btn_know_more);
+        btnKnowMore.setOnClickListener(this);
     }
 
     @Override

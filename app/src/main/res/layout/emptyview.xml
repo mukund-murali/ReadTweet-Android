@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:padding="@dimen/content_gutter"
+    android:orientation="vertical">
 
     <TextView
-        android:layout_margin="@dimen/content_gutter"
-        android:text="Empty text view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="First time?\nFetching data. Please wait."
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
 </LinearLayout>

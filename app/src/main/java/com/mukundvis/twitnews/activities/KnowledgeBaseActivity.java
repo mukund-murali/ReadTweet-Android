@@ -22,7 +22,7 @@ import retrofit.http.Query;
 /**
  * Created by mukundvis on 26/06/15.
  */
-public class KnowledgeBaseActivity extends BaseActivity {
+public class KnowledgeBaseActivity extends BaseLoggedInActivity {
 
     private static final String DEBUG_TAG = KnowledgeBaseActivity.class.getSimpleName();
 

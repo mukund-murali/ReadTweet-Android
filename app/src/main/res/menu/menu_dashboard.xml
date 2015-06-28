@@ -21,4 +21,17 @@
         android:title="@string/action_view_settings"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_how_it_works"
+        android:orderInCategory="100"
+        android:title="@string/action_how_it_works"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_like_this"
+        android:orderInCategory="100"
+        android:visible="false"
+        android:title="@string/action_like_this"
+        app:showAsAction="never" />
+
 </menu>

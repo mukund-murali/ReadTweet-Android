@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:padding="@dimen/content_gutter"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Keywords are obtained from tweets as and when each tweet is seen using keyword extraction API from AlchemyAPI" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/content_gutter"
+        android:gravity="center"
+        android:text="Based on user input - \n1. user scrolls through (skipped),\n2. user clicks and reads the tweet or article (interested),\n3. user clicks 'cross' to say he does not like the tweet." />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/content_gutter"
+        android:gravity="center"
+        android:text="keywords associated with tweets are scored with heuristic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/content_gutter"
+        android:gravity="center"
+        android:text="Next time tweet with keywords available in DB are seen, tweet is given a score. If the score is above a threshold, it is categorized as relevant." />
+
+</LinearLayout>

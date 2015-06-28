@@ -15,7 +15,6 @@ import com.mukundvis.twitnews.MyApplication;
 import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
-import com.mukundvis.twitnews.prefs.SharedPrefs;
 import com.mukundvis.twitnews.utils.DBUtils;
 import com.squareup.picasso.Picasso;
 
@@ -67,9 +66,8 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView tvScreenName, tvTweet, tvUsername, tvTimeDiff;
-        Button btnInterested, btnIgnored;
 
-        View baseView, viewHasArticle;
+        View baseView, btnReadArticle, ibViewComments, ibIgnore;
         ImageView ivDp, ivMainPicture;
 
         public ViewHolder(View v) {
@@ -77,16 +75,16 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             tvScreenName = (TextView) v.findViewById(R.id.tv_screen_name);
             tvUsername = (TextView) v.findViewById(R.id.tv_username);
             tvTweet = (TextView) v.findViewById(R.id.tv_tweet);
-            tvTweet.setOnClickListener(this);
             tvTimeDiff = (TextView) v.findViewById(R.id.tv_time_diff);
-            btnIgnored = (Button) v.findViewById(R.id.btn_ignore);
-            btnIgnored.setOnClickListener(this);
-            btnInterested = (Button) v.findViewById(R.id.btn_interested);
-            btnInterested.setOnClickListener(this);
-            viewHasArticle = v.findViewById(R.id.view_has_article);
-            viewHasArticle.setOnClickListener(this);
+            btnReadArticle = v.findViewById(R.id.btn_read_acticle);
+            btnReadArticle.setOnClickListener(this);
+            ibViewComments = v.findViewById(R.id.ib_view_comments);
+            ibViewComments.setOnClickListener(this);
+            ibIgnore = v.findViewById(R.id.ib_ignore);
+            ibIgnore.setOnClickListener(this);
             ivDp = (ImageView) v.findViewById(R.id.iv_dp);
             ivMainPicture = (ImageView) v.findViewById(R.id.iv_main_picture);
+            v.setOnClickListener(this);
             baseView = v;
         }
 
@@ -96,18 +94,14 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
                 return;
             }
             switch (v.getId()) {
-                case R.id.btn_ignore:
+                case R.id.ib_ignore:
                     mListener.onIgnored(getAdapterPosition());
                     break;
-                case R.id.btn_interested:
-                    mListener.onInterested(getAdapterPosition());
-                    break;
-                case R.id.tv_tweet:
-                    mListener.onTweetClick(getAdapterPosition());
-                    break;
-                case R.id.view_has_article:
+                case R.id.btn_read_acticle:
                     mListener.onRead(getAdapterPosition());
                     break;
+                default:
+                    mListener.onTweetClick(getAdapterPosition());
             }
         }
     }
@@ -149,14 +143,14 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             holder.baseView.setBackgroundColor(nonRelevantColor);
         }
         if (tweet.hasArticle()) {
-            holder.viewHasArticle.setVisibility(View.VISIBLE);
+            holder.btnReadArticle.setVisibility(View.VISIBLE);
         } else {
-            holder.viewHasArticle.setVisibility(View.GONE);
+            holder.btnReadArticle.setVisibility(View.GONE);
         }
         if (tweet.hasPicture() && shouldShowImages) {
             String url = tweet.entities.media.get(0).mediaUrl;
             holder.ivMainPicture.setVisibility(View.VISIBLE);
-            Picasso.with(context).load(url).placeholder(R.drawable.place_holder).into(holder.ivMainPicture);
+            Picasso.with(context).load(url).placeholder(R.drawable.placeholder).into(holder.ivMainPicture);
         } else {
             holder.ivMainPicture.setVisibility(View.GONE);
         }

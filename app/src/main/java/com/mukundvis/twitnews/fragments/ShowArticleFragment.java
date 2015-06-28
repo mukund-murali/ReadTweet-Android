@@ -109,7 +109,7 @@ public class ShowArticleFragment extends BaseFragment implements View.OnClickLis
                 .setEndpoint(ApiConstants.DIFFBOT_ENDPOINT)
                 .build();
         GetCleansedArticleService service = restAdapter.create(GetCleansedArticleService.class);
-        tv.setText("Trying to be smart.");
+        tv.setText("Smart view\n(Experimental)");
         llLoading.setVisibility(View.VISIBLE);
         service.getArticle(API_TOKEN,
                 url, API_TIMEOUT_MILLIS, new Callback<ArticleResponse>() {
@@ -174,6 +174,7 @@ public class ShowArticleFragment extends BaseFragment implements View.OnClickLis
     }
 
     private void showWebpage(String url) {
+        btnShowOriginal.setVisibility(View.GONE);
         tvArticleTitle.setVisibility(View.GONE);
         webview.loadUrl(url);
     }

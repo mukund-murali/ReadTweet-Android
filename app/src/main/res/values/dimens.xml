@@ -11,4 +11,9 @@
     <dimen name="text_regular">16sp</dimen>
     <dimen name="list_padding">10dp</dimen>
     <dimen name="twitter_dp">32dp</dimen>
+    <dimen name="content_gutter_2x">32dp</dimen>
+
+    <dimen name="ib_tweet_action">48dp</dimen>
+    <dimen name="new_button_height">36dp</dimen>
+
 </resources>

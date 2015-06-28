@@ -12,6 +12,12 @@
         <item name="colorAccent">@color/accent</item>
     </style>
 
+    <style name="AppThemeToolbar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+    </style>
+
     <style name="HorizontalLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
@@ -21,5 +27,26 @@
     <style name="TVPrimary">
         <item name="android:textColor">@color/primary_dark</item>
     </style>
+
+    <style name="TweetActionImageButtons">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_height">@dimen/ib_tweet_action</item>
+        <item name="android:layout_width">@dimen/ib_tweet_action</item>
+    </style>
+
+    <style name="Btn">
+        <item name="android:layout_height">@dimen/new_button_height</item>
+    </style>
+
+    <style name="Widget.MyApp.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/primary</item>
+        <item name="theme">@style/ThemeOverlay.MyApp.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="ThemeOverlay.MyApp.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
+
 
 </resources>

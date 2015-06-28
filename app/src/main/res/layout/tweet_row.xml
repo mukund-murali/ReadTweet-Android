@@ -2,14 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="72dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="@dimen/list_padding_more">
+        android:padding="@dimen/content_gutter">
 
         <ImageView
             android:id="@+id/iv_dp"
@@ -19,7 +20,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/list_padding_more"
+            android:layout_marginLeft="@dimen/content_gutter"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -59,17 +60,6 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/iv_main_picture"
-        android:layout_width="match_parent"
-        android:scaleType="fitStart"
-        android:adjustViewBounds="true"
-        android:visibility="gone"
-        android:layout_marginLeft="@dimen/list_padding_more"
-        android:layout_marginRight="@dimen/list_padding_more"
-        android:layout_marginBottom="@dimen/list_padding_more"
-        android:layout_height="wrap_content" />
-
     <TextView
         android:id="@+id/tv_tweet"
         android:textColor="@color/tweet"
@@ -81,39 +71,46 @@
         android:fontFamily="sans-serif-light"
         android:textSize="@dimen/text_regular" />
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/iv_main_picture"
+        android:layout_width="match_parent"
+        android:scaleType="fitStart"
+        android:adjustViewBounds="true"
+        android:visibility="visible"
+        android:src="@drawable/placeholder"
+        android:layout_marginTop="@dimen/list_padding_more"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/card_padding"
-        android:gravity="right">
+        android:padding="@dimen/card_padding">
+
+        <ImageButton
+            android:id="@+id/ib_view_comments"
+            style="@style/TweetActionImageButtons"
+            android:src="@drawable/ic_comments" />
+
+        <ImageButton
+            android:id="@+id/ib_ignore"
+            android:layout_toRightOf="@+id/ib_view_comments"
+            style="@style/TweetActionImageButtons"
+            android:src="@drawable/ic_cross" />
 
         <Button
-            android:id="@+id/btn_ignore"
-            style="@style/TVPrimary"
+            android:id="@+id/btn_read_acticle"
+            style="@style/Btn"
+            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dont Like" />
-
-        <Button
-            android:id="@+id/btn_interested"
-            style="@style/TVPrimary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:text="Interested" />
-
-
-        <Button
-            android:id="@+id/view_has_article"
-            style="@style/TVPrimary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/content_gutter"
-            android:layout_toLeftOf="@+id/tv_time_diff"
             android:text="Read"
-            android:visibility="gone" />
+            android:layout_margin="@dimen/card_padding"
+            android:elevation="2dp"
+            android:layout_alignParentRight="true"
+            android:textColor="@android:color/white"
+            android:background="@color/primary"
+            android:visibility="visible" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <View style="@style/HorizontalLine" />
 

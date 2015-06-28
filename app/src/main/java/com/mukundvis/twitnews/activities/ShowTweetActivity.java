@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.mukundvis.twitnews.R;
@@ -35,7 +37,7 @@ public class ShowTweetActivity  extends BaseActivity {
 
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
-    private TabLayout tabLayout;
+    private Toolbar toolbar;
 
     @Override
     protected int getDefaultLayout() {
@@ -45,7 +47,6 @@ public class ShowTweetActivity  extends BaseActivity {
     @Override
     protected void getViewReferences() {
         mPager = (ViewPager) findViewById(R.id.pager);
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
     }
 
     @Override
@@ -58,10 +59,25 @@ public class ShowTweetActivity  extends BaseActivity {
             this.finish();
             return;
         }
+
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        tabLayout.setupWithViewPager(mPager);
         mPager.setCurrentItem(pageToOpen);
+        setupActionBar();
+    }
+
+    private void setupActionBar() {
+        toolbar = getToolbar();
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        TabLayout tl = new TabLayout(this);
+        tl.setTabTextColors(getResources().getColor(R.color.tab_normal_color),
+                getResources().getColor(R.color.tab_selected_color));
+        tl.setupWithViewPager(mPager);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(tl);
     }
 
     @Override

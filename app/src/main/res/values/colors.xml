@@ -2,16 +2,18 @@
 <resources>
 
     <color name="primary_light">#B2EBF2</color>
-    <color name="primary">#4ECFE2</color>
-    <color name="primary_dark">#00B5CD</color>
+    <color name="primary">#0DBCD4</color>
+    <color name="primary_dark">#14A1B4</color>
 
     <color name="pleasant">#F5F5F5</color>
 
-    <color name="accent">#55CFE1</color>
+    <color name="accent">#CDDC39</color>
 
     <color name="relevant">#9CCC65</color>
     <color name="non_relevant">#FFAB91</color>
     <color name="username">#333</color>
     <color name="screenname">#aeaeae</color>
     <color name="tweet">#333</color>
+    <color name="tab_normal_color">#eee</color>
+    <color name="tab_selected_color">#fff</color>
 </resources>
