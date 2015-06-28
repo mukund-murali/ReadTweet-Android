@@ -12,6 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageButton
+        android:layout_alignParentRight="true"
+        android:id="@+id/ib_next_slide"
+        android:layout_alignBottom="@+id/pager"
+        style="@style/TweetActionImageButtons"
+        android:src="@drawable/ic_chevron_right"/>
+
     <!--<com.viewpagerindicator.CirclePageIndicator-->
         <!--android:id="@+id/circles"-->
         <!--android:layout_height="wrap_content"-->
@@ -25,5 +32,12 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/content_gutter" />
+
+    <Button
+        android:visibility="gone"
+        android:text="Login"
+        android:id="@+id/btn_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

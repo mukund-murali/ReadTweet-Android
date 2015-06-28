@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.mukundvis.twitnews.R;
@@ -31,13 +33,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private ViewPager pager;
     // private CirclePageIndicator pageIndicator;
-
+    private Button btnLogin;
+    private ImageButton ibNextSlide;
     private TwitterLoginButton loginButton;
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(this, HowItWorksActivity.class);
-        startActivity(intent);
+        switch (v.getId()) {
+            case R.id.ib_next_slide:
+                pager.setCurrentItem(1);
+                ibNextSlide.setVisibility(View.GONE);
+                break;
+        }
     }
 
     public interface LoginService {
@@ -61,6 +68,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void getViewReferences() {
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         pager = (ViewPager) findViewById(R.id.pager);
+        btnLogin = getButton(R.id.btn_login);
+        btnLogin.setOnClickListener(this);
+        ibNextSlide = (ImageButton) findViewById(R.id.ib_next_slide);
+        ibNextSlide.setOnClickListener(this);
         // pageIndicator = (CirclePageIndicator) findViewById(R.id.circles);
     }
 
