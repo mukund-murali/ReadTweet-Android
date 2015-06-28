@@ -1,6 +1,8 @@
 buildscript {
     repositories {
+        maven { url "http://dl.bintray.com/populov/maven" }
         jcenter()
+        mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
@@ -35,8 +37,10 @@ android {
 apply plugin: 'io.fabric'
 
 repositories {
+    maven { url "http://dl.bintray.com/populov/maven" }
     jcenter()
     maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
 }
 
 dependencies {

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:gravity="center_horizontal"
+    android:padding="@dimen/content_gutter"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_marginTop="@dimen/content_gutter_2x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/img_onboarding_2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_sub_head"
+        android:text="Your on-the-go News Companion"
+        android:layout_marginTop="@dimen/content_gutter"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/card_padding"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Automatically curated news, based on your interests, all sourced from twitter"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>

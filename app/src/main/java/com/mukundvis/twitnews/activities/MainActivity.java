@@ -1,11 +1,24 @@
 package com.mukundvis.twitnews.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.Toast;
 
 import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.constants.ApiConstants;
+import com.mukundvis.twitnews.fragments.ObPg1Fragment;
+import com.mukundvis.twitnews.fragments.ObPg2Fragment;
 import com.mukundvis.twitnews.models.LoginResponse;
 import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -14,17 +27,12 @@ import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.POST;
 
-import android.content.Intent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-
 public class MainActivity extends BaseActivity implements View.OnClickListener {
+
+    private ViewPager pager;
+    // private CirclePageIndicator pageIndicator;
+
+    private TwitterLoginButton loginButton;
 
     @Override
     public void onClick(View v) {
@@ -44,9 +52,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         );
     }
 
-    private TwitterLoginButton loginButton;
-    private Button btnKnowMore;
-
     @Override
     protected int getDefaultLayout() {
         return R.layout.activity_main;
@@ -55,8 +60,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void getViewReferences() {
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
-        btnKnowMore = getButton(R.id.btn_know_more);
-        btnKnowMore.setOnClickListener(this);
+        pager = (ViewPager) findViewById(R.id.pager);
+        // pageIndicator = (CirclePageIndicator) findViewById(R.id.circles);
     }
 
     @Override
@@ -72,6 +77,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             this.finish();
             return;
         }
+        pager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
+        // pageIndicator.setViewPager(pager);
+
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -118,6 +126,44 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         loginButton.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+
+        private static final String TITLE_KEYWORDS = "Keywords";
+        private static final String TITLE_TAXONOMIES = "Taxonomy";
+
+        private static final int NUM_PAGES = 2;
+
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return new ObPg1Fragment();
+                default:
+                    return new ObPg2Fragment();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            // If article is not there, do not show the article tab
+            switch (position) {
+                case 0:
+                    return TITLE_KEYWORDS;
+                default:
+                    return TITLE_TAXONOMIES;
+            }
+        }
     }
 
 }

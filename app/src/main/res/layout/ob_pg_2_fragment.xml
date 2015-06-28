@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/primary"
+    android:padding="@dimen/content_gutter"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Tweets with links, automatically show up within the Read Button"
+        android:layout_width="wrap_content"
+        android:gravity="right"
+        android:layout_marginBottom="@dimen/card_padding"
+        android:textColor="@android:color/white"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:src="@drawable/img_onboarding_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="Tap the ‘x’ if you are uninterested in that story, tap the tweet to show your interest"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/card_padding"
+        android:textColor="@android:color/white"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
