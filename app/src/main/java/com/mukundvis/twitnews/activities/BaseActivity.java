@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
 import com.mukundvis.twitnews.MyApplication;
@@ -47,5 +48,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected LinearLayout getLinearLayout(int id) {
         return (LinearLayout) findViewById(id);
+    }
+
+    protected CheckBox getCheckBox(int id) {
+        return (CheckBox) findViewById(id);
     }
 }

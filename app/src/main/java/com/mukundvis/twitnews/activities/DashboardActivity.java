@@ -9,6 +9,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,6 +47,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         SwipeRefreshLayout.OnRefreshListener, OnMoreListener, LoaderManager.LoaderCallbacks<Cursor>,TweetCursorAdapter.OnButtonClickListener {
 
     private static final int TWEETS_LOADER = 1012;
+    private static final String DEBUG_TAG = DashboardActivity.class.getSimpleName();
 
     SuperRecyclerView mRecyclerView;
     SparseItemRemoveAnimator mSparseAnimator;
@@ -58,6 +60,12 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
     TweetCursorAdapter mAdapter;
 
     Cursor activeCursor = null;
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.e(DEBUG_TAG, "onNewIntent");
+        super.onNewIntent(intent);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -326,9 +334,16 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
             case R.id.action_keywords:
                 startKeywordActivity();
                 return true;
+            case R.id.action_settings:
+                startSettingsActivity();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startSettingsActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     private void startKeywordActivity() {

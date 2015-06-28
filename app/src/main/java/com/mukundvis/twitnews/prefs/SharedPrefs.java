@@ -18,6 +18,7 @@ public class SharedPrefs {
 
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_DEVICE_ID = "device_id";
+    private static final String SHOULD_SHOW_IMAGES = "show_images";
 
     public SharedPrefs setLoginInfo(long userId, String deviceId) {
         setLongPref(KEY_USER_ID, userId).setStringPref(KEY_DEVICE_ID, deviceId);
@@ -60,5 +61,14 @@ public class SharedPrefs {
 
     public void commit() {
         editor.apply();
+    }
+
+    public boolean shouldShowImages() {
+        return prefs.getBoolean(SHOULD_SHOW_IMAGES, true);
+    }
+
+    public SharedPrefs setShouldShowImages(boolean shouldShowImages) {
+        editor.putBoolean(SHOULD_SHOW_IMAGES, shouldShowImages);
+        return this;
     }
 }

@@ -93,11 +93,15 @@ public class ShowTweetActivity  extends BaseActivity {
 
         @Override
         public int getCount() {
-            return NUM_PAGES;
+            if (tweet.hasArticle()) {
+                return NUM_PAGES;
+            }
+            return 1;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
+            // If article is not there, do not show the article tab
             switch (position) {
                 case 0:
                     return TITLE_TWEET;

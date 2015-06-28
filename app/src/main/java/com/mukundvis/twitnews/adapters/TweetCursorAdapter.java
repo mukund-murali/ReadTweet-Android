@@ -11,9 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.mukundvis.twitnews.MyApplication;
 import com.mukundvis.twitnews.R;
 import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
+import com.mukundvis.twitnews.prefs.SharedPrefs;
 import com.mukundvis.twitnews.utils.DBUtils;
 import com.squareup.picasso.Picasso;
 
@@ -33,18 +35,21 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
 
     private static final String DEBUG_TAG = TweetCursorAdapter.class.getSimpleName();
 
-    Context context;
-
     int relevantColor, nonRelevantColor;
 
+    public HashMap<Long, MyTweet> tweets = new HashMap<>();
+    Context context;
+    Gson gson = new Gson();
     DBHelper helper;
+    boolean shouldShowImages = true;
 
     public TweetCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
         this.context = context;
         helper = DBHelper.getInstance();
-        relevantColor = context.getResources().getColor(R.color.relevant);
+        relevantColor = context.getResources().getColor(R.color.pleasant);
         nonRelevantColor = context.getResources().getColor(R.color.non_relevant);
+        shouldShowImages = MyApplication.getInstance().getPrefs().shouldShowImages();
     }
 
     public interface OnButtonClickListener {
@@ -111,9 +116,6 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         this.mListener = onButtonClickListener;
     }
 
-    public HashMap<Long, MyTweet> tweets = new HashMap<>();
-    Gson gson = new Gson();
-
     public MyTweet getTweet(long tweetId, Cursor cursor) {
         MyTweet tweet;
         if (!tweets.containsKey(tweetId)) {
@@ -142,7 +144,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
             holder.tvTimeDiff.setText("");
         }
         if (tweet.isRelevant()) {
-            // holder.baseView.setBackgroundColor(relevantColor);
+            holder.baseView.setBackgroundColor(relevantColor);
         } else {
             holder.baseView.setBackgroundColor(nonRelevantColor);
         }
@@ -151,7 +153,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         } else {
             holder.viewHasArticle.setVisibility(View.GONE);
         }
-        if (tweet.hasPicture()) {
+        if (tweet.hasPicture() && shouldShowImages) {
             String url = tweet.entities.media.get(0).mediaUrl;
             holder.ivMainPicture.setVisibility(View.VISIBLE);
             Picasso.with(context).load(url).placeholder(R.drawable.place_holder).into(holder.ivMainPicture);
