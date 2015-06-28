@@ -21,4 +21,5 @@ public class ApiConstants {
     public static final String DIFFBOT_ENDPOINT = "http://api.diffbot.com/v3";
     public static final String URL_GET_CLEAN_ARTICLE = "/article";
 
+    public static final String URL_GET_TAXONOMY = "/taxonomy";
 }

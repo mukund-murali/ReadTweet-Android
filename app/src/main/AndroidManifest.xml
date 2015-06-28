@@ -27,6 +27,7 @@
         </activity>
         <activity
             android:name=".activities.KnowledgeBaseActivity"
+            android:theme="@style/AppThemeToolbar"
             android:parentActivityName=".activities.DashboardActivity"
             android:label="@string/title_kb" >
         </activity>

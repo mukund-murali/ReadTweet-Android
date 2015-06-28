@@ -1,23 +1,18 @@
 package com.mukundvis.twitnews.activities;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 
 import com.mukundvis.twitnews.R;
-import com.mukundvis.twitnews.adapters.KeywordRecyclerAdapter;
-import com.mukundvis.twitnews.constants.ApiConstants;
-import com.mukundvis.twitnews.models.KeywordWithRelevance;
-import com.mukundvis.twitnews.models.KeywordResponse;
-
-import java.util.List;
-
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import retrofit.http.GET;
-import retrofit.http.Query;
+import com.mukundvis.twitnews.fragments.ShowKeywordsFragment;
+import com.mukundvis.twitnews.fragments.ShowTaxonomyFragment;
 
 /**
  * Created by mukundvis on 26/06/15.
@@ -26,26 +21,20 @@ public class KnowledgeBaseActivity extends BaseLoggedInActivity {
 
     private static final String DEBUG_TAG = KnowledgeBaseActivity.class.getSimpleName();
 
-    GetKeywordsService service;
-    RecyclerView rv;
 
-    public interface GetKeywordsService {
-        @GET(ApiConstants.URL_GET_KEYWORDS)
-        void getKeywords(
-                @Query("device_id") String deviceId,
-                @Query("user_id") long userId,
-                retrofit.Callback<KeywordResponse> callback
-        );
-    }
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
+    private Toolbar toolbar;
+
 
     @Override
     protected int getDefaultLayout() {
-        return R.layout.kb;
+        return R.layout.kb_activity;
     }
 
     @Override
     protected void getViewReferences() {
-        rv = getRecyclerView(R.id.rv);
+        mPager = (ViewPager) findViewById(R.id.pager);
     }
 
     @Override
@@ -56,28 +45,63 @@ public class KnowledgeBaseActivity extends BaseLoggedInActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RecyclerView.LayoutManager mLayoutManager = new android.support.v7.widget.LinearLayoutManager(this);
-        rv.setLayoutManager(mLayoutManager);
 
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(ApiConstants.END_POINT_V2)
-                .build();
-        service = restAdapter.create(GetKeywordsService.class);
-        service.getKeywords(getPrefs().getDeviceId(), getPrefs().getUserId(), new Callback<KeywordResponse>() {
-            @Override
-            public void success(KeywordResponse keywordResponse, Response response) {
-                List<KeywordWithRelevance> keywords = keywordResponse.getUserKeywords();
-                if (keywords == null) {
-                    return;
-                }
-                KeywordRecyclerAdapter adapter = new KeywordRecyclerAdapter(keywords);
-                rv.setAdapter(adapter);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-
-            }
-        });
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+        setupActionBar();
     }
+
+
+    private void setupActionBar() {
+        toolbar = getToolbar();
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        TabLayout tl = new TabLayout(this);
+        tl.setTabTextColors(getResources().getColor(R.color.tab_normal_color),
+                getResources().getColor(R.color.tab_selected_color));
+        tl.setupWithViewPager(mPager);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(tl);
+    }
+
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+
+        private static final String TITLE_KEYWORDS = "Keywords";
+        private static final String TITLE_TAXONOMIES = "Taxonomy";
+
+        private static final int NUM_PAGES = 2;
+
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return ShowKeywordsFragment.getInstance();
+                default:
+                    return ShowTaxonomyFragment.getInstance();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            // If article is not there, do not show the article tab
+            switch (position) {
+                case 0:
+                    return TITLE_KEYWORDS;
+                default:
+                    return TITLE_TAXONOMIES;
+            }
+        }
+    }
+
 }

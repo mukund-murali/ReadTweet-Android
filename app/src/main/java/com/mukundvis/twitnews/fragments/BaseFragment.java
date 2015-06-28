@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mukundvis.twitnews.MyApplication;
+import com.mukundvis.twitnews.prefs.SharedPrefs;
+
 /**
  * Created by mukundvis on 28/06/15.
  */
@@ -40,5 +43,8 @@ public abstract class BaseFragment extends Fragment{
         return layout;
     }
 
+    protected SharedPrefs getPrefs() {
+        return MyApplication.getInstance().getPrefs();
+    }
 
 }
