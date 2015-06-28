@@ -20,12 +20,14 @@
 
         <TextView
             android:id="@+id/tv_article_title"
-            android:padding="@dimen/card_padding"
-            android:visibility="gone"
             android:layout_width="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_height="wrap_content"
-            android:text="" />
+            android:padding="@dimen/card_padding"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/primary_text_color"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <WebView
             android:id="@+id/webview"
@@ -37,10 +39,14 @@
     <Button
         android:id="@+id/btn_show_original"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/new_button_height"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="@dimen/card_padding"
+        android:background="#EE444444"
+        android:textColor="@android:color/white"
+        android:paddingLeft="@dimen/card_padding"
+        android:paddingRight="@dimen/card_padding"
         android:text="Show Original"
         android:visibility="gone" />
 

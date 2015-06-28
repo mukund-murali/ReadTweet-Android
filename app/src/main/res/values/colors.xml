@@ -16,4 +16,5 @@
     <color name="tweet">#333</color>
     <color name="tab_normal_color">#eee</color>
     <color name="tab_selected_color">#fff</color>
+    <color name="primary_text_color">#212121</color>
 </resources>
