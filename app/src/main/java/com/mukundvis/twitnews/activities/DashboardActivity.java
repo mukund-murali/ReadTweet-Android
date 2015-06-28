@@ -276,7 +276,10 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         long tweetId = DBUtils.getTweetId(activeCursor);
         MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
         int markInterested = helper.markInterested(tweet.id, activeCursor);
-        getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
+        // no change in UI is required with this. So, not calling notifyChange
+        // If notifyChange is called, cursor changes, and the bindViewHolder methods are called again.
+        // Which is not what we need.
+        // getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
     }
 
     private void markTweetSkipped(int position) {
@@ -284,7 +287,10 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
         long tweetId = DBUtils.getTweetId(activeCursor);
         MyTweet tweet = mAdapter.getTweet(tweetId, activeCursor);
         int markIgnored = helper.markSkipped(tweet.id, activeCursor);
-        getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
+        // no change in UI is required with this. So, not calling notifyChange
+        // If notifyChange is called, cursor changes, and the bindViewHolder methods are called again.
+        // Which is not what we need.
+        // getContentResolver().notifyChange(TweetProvider.CONTENT_URI, null);
     }
 
     @Override

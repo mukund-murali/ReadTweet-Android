@@ -49,8 +49,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
     SQLiteDatabase db, readableDb;
 
+    private static DBHelper sInstance;
+
     public static DBHelper getInstance() {
-        return new DBHelper(MyApplication.getInstance());
+        if (sInstance == null) {
+            sInstance = new DBHelper(MyApplication.getInstance());
+        }
+        return sInstance;
     }
 
     public DBHelper(Context context) {
@@ -90,6 +95,8 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_IGNORED, ignored + 1);
         values.put(COLUMN_IS_SYNCED, Boolean.FALSE);
+        // When user is marking something as interested, it has more weightage
+        values.put(COLUMN_SKIPPED, 0);
         return db.update(TABLE_NAME, values, selection, selectionArgs);
     }
 
@@ -100,6 +107,8 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_INTERESTED, interested + 1);
         values.put(COLUMN_IS_SYNCED, Boolean.FALSE);
+        // When user is marking something as interested, it has more weightage
+        values.put(COLUMN_SKIPPED, 0);
         return db.update(TABLE_NAME, values, selection, selectionArgs);
     }
 

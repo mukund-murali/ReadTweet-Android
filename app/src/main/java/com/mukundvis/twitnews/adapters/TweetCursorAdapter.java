@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.mukundvis.twitnews.R;
+import com.mukundvis.twitnews.database.DBHelper;
 import com.mukundvis.twitnews.models.MyTweet;
 import com.mukundvis.twitnews.utils.DBUtils;
 import com.squareup.picasso.Picasso;
@@ -36,9 +37,12 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
 
     int relevantColor, nonRelevantColor;
 
+    DBHelper helper;
+
     public TweetCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
         this.context = context;
+        helper = DBHelper.getInstance();
         relevantColor = context.getResources().getColor(R.color.relevant);
         nonRelevantColor = context.getResources().getColor(R.color.non_relevant);
     }
@@ -158,6 +162,7 @@ public class TweetCursorAdapter extends CursorRecyclerViewAdapter {
         // start with the ImageView
         // Picasso.with(context).cancelRequest(holder.ivDp);
         Picasso.with(context).load(url).into(holder.ivDp);
+        helper.markSkipped(tweetId, cursor);
     }
 
     private String getTimeDiffFromNow(Date date) {
