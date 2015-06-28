@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Keywords are obtained from tweets as and when each tweet is seen using keyword extraction API from AlchemyAPI" />
+        android:text="Keywords and taxonomy are obtained from tweets as and when each tweet is seen using extraction API from AlchemyAPI" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/content_gutter"
         android:gravity="center"
-        android:text="keywords associated with tweets are scored with heuristic" />
+        android:text="keywords and taxonomy associated with tweets are scored with heuristic" />
 
     <TextView
         android:layout_width="wrap_content"
