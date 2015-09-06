@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.crashlytics.android.core.CrashlyticsListener;
 import com.google.gson.Gson;
 import com.malinskiy.superrecyclerview.OnMoreListener;
 import com.malinskiy.superrecyclerview.SuperRecyclerView;
@@ -230,6 +231,7 @@ public class DashboardActivity extends BaseLoggedInActivity implements SwipeDism
             @Override
             public void failure(RetrofitError error) {
                 removeLoadingViews();
+                Toast.makeText(DashboardActivity.this, "Some error occured: " + error.getResponse().getStatus(), Toast.LENGTH_LONG).show();
                 if (error.getResponse() == null) {
                     return;
                 }

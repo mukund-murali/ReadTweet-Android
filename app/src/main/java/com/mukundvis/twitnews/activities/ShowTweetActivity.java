@@ -60,7 +60,7 @@ public class ShowTweetActivity  extends BaseActivity {
             return;
         }
 
-        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new InfoSwitcherPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         setupActionBar();
         mPager.setCurrentItem(pageToOpen);
@@ -86,14 +86,14 @@ public class ShowTweetActivity  extends BaseActivity {
         pageToOpen = arguments.getInt(KEY_PAGE_TO_OPEN, PAGE_TWEET);
     }
 
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+    private class InfoSwitcherPagerAdapter extends FragmentStatePagerAdapter {
 
         private static final String TITLE_TWEET = "Tweet";
         private static final String TITLE_ARTICLE = "Article";
 
         private static final int NUM_PAGES = 2;
 
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+        public InfoSwitcherPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

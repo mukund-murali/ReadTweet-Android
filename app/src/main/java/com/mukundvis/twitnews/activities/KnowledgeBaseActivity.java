@@ -21,11 +21,9 @@ public class KnowledgeBaseActivity extends BaseLoggedInActivity {
 
     private static final String DEBUG_TAG = KnowledgeBaseActivity.class.getSimpleName();
 
-
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private Toolbar toolbar;
-
 
     @Override
     protected int getDefaultLayout() {
@@ -46,7 +44,7 @@ public class KnowledgeBaseActivity extends BaseLoggedInActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new ChangeViewsPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         setupActionBar();
     }
@@ -66,14 +64,14 @@ public class KnowledgeBaseActivity extends BaseLoggedInActivity {
         actionBar.setCustomView(tl);
     }
 
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+    private class ChangeViewsPagerAdapter extends FragmentStatePagerAdapter {
 
         private static final String TITLE_KEYWORDS = "Keywords";
         private static final String TITLE_TAXONOMIES = "Taxonomy";
 
         private static final int NUM_PAGES = 2;
 
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+        public ChangeViewsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

@@ -88,7 +88,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             this.finish();
             return;
         }
-        pager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
+        pager.setAdapter(new OnboardingPagerAdapter(getSupportFragmentManager()));
         // pageIndicator.setViewPager(pager);
 
         loginButton.setCallback(new Callback<TwitterSession>() {
@@ -139,14 +139,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         loginButton.onActivityResult(requestCode, resultCode, data);
     }
 
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-
-        private static final String TITLE_KEYWORDS = "Keywords";
-        private static final String TITLE_TAXONOMIES = "Taxonomy";
+    private class OnboardingPagerAdapter extends FragmentStatePagerAdapter {
 
         private static final int NUM_PAGES = 2;
 
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+        public OnboardingPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -167,13 +164,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            // If article is not there, do not show the article tab
-            switch (position) {
-                case 0:
-                    return TITLE_KEYWORDS;
-                default:
-                    return TITLE_TAXONOMIES;
-            }
+            return "";
         }
     }
 
